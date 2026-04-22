@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Clinic SP — Mapa Mental de Marketing</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #f8f7f4;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #fff;
+    border-bottom: 0.5px solid #d3d1c7;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-left h1 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1A5FA8;
+    letter-spacing: -0.01em;
+  }
+
+  .header-left p {
+    font-size: 12px;
+    color: #888780;
+    margin-top: 2px;
+  }
+
+  .legend {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .leg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5f5e5a;
+  }
+
+  .leg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .map-container {
+    padding: 32px 24px 60px;
+    overflow-x: auto;
+  }
+
+  svg.mindmap {
+    display: block;
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .node {
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .node:hover > rect,
+  .node:hover > ellipse,
+  .node:hover > circle {
+    opacity: 0.82;
+  }
+
+  /* tooltip */
+  #tooltip {
+    position: fixed;
+    background: #fff;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #5f5e5a;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    max-width: 220px;
+    line-height: 1.5;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  /* panel */
+  #panel {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 340px;
+    background: #fff;
+    border-left: 0.5px solid #d3d1c7;
+    padding: 24px 24px 32px;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+    z-index: 50;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #panel.open { transform: translateX(0); }
+
+  #panel-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 6px;
+    width: 28px; height: 28px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #888780;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  #panel-close:hover { background: #f1efe8; }
+
+  #panel-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    width: fit-content;
+  }
+
+  #panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+
+  #panel-body {
+    font-size: 14px;
+    color: #5f5e5a;
+    line-height: 1.7;
+  }
+
+  #panel-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #panel-items li {
+    font-size: 13px;
+    color: #3d3d3a;
+    padding: 7px 10px;
+    background: #f8f7f4;
+    border-radius: 6px;
+    border-left: 2px solid #d3d1c7;
+    line-height: 1.5;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .kpi-card {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .kpi-label { font-size: 11px; color: #888780; }
+  .kpi-value { font-size: 18px; font-weight: 600; color: #1A5FA8; margin-top: 2px; }
+
+  @media (max-width: 600px) {
+    #panel { width: 100%; }
+    header { padding: 12px 16px; flex-direction: column; gap: 10px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Human Clinic SP · Dr. Ivan Rollemberg</h1>
+    <p>Mapa mental de marketing — mídia on + off · Abril 2026</p>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#534AB7;"></div>Mídia online</div>
+    <div class="leg"><div class="leg-dot" style="background:#D85A30;"></div>Mídia offline</div>
+    <div class="leg"><div class="leg-dot" style="background:#1D9E75;"></div>Resultados</div>
+    <div class="leg"><div class="leg-dot" style="background:#888780;"></div>Operação</div>
+  </div>
+</header>
+
+<div class="map-container">
+<svg class="mindmap" viewBox="0 0 1200 1060" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Mapa mental Human Clinic SP — Dr. Ivan Rollemberg</title>
+
+  <defs>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- ====== CENTER ====== -->
+  <g class="node" onclick="showPanel('center')">
+    <ellipse cx="600" cy="100" rx="168" ry="50" fill="#F1EFE8" stroke="#888780" stroke-width="1.5"/>
+    <text x="600" y="92" text-anchor="middle" font-size="16" font-weight="600" fill="#2C2C2A">Human Clinic SP</text>
+    <text x="600" y="112" text-anchor="middle" font-size="12" fill="#5F5E5A">Dr. Ivan · longevidade</text>
+  </g>
+
+  <!-- ====== LONGEVIDADE PILL (top) ====== -->
+  <path d="M600 50 L600 20" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr-gray)"/>
+  <g class="node" onclick="showPanel('longevidade')">
+    <rect x="462" y="0" width="276" height="32" rx="16" fill="#D3D1C7" stroke="#888780" stroke-width="0.5"/>
+    <text x="600" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A" dominant-baseline="central">Tema unificador: longevidade</text>
+  </g>
+
+  <!-- ====== BRANCH LEFT: MÍDIA ONLINE ====== -->
+  <path d="M446 82 Q300 82 240 140" fill="none" stroke="#534AB7" stroke-width="2" marker-end="url(#arr-purple)"/>
+
+  <!-- Online branch node -->
+  <g class="node" onclick="showPanel('online')">
+    <rect x="120" y="140" width="210" height="52" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+    <text x="225" y="158" text-anchor="middle" font-size="14" font-weight="600" fill="#3C3489">Mídia online</text>
+    <text x="225" y="176" text-anchor="middle" font-size="11" fill="#534AB7">tráfego + conteúdo orgânico</text>
+  </g>
+
+  <!-- Online sub-branches -->
+  <!-- 1. Instagram Dr. Ivan -->
+  <path d="M225 192 L225 248" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('instagram')">
+    <rect x="110" y="248" width="230" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="225" y="266" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Instagram Dr. Ivan</text>
+    <text x="225" y="284" text-anchor="middle" font-size="11" fill="#534AB7">3 reels + 2 feeds/sem + stories</text>
+  </g>
+
+  <!-- Instagram sub -->
+  <path d="M152 300 L100 346" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('bastidores')">
+    <rect x="20" y="346" width="148" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="94" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Bastidores</text>
+    <text x="94" y="380" text-anchor="middle" font-size="11" fill="#534AB7">espontâneo, sem roteiro</text>
+  </g>
+
+  <path d="M298 300 L348 346" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('pautas')">
+    <rect x="270" y="346" width="148" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="344" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Pautas abertas</text>
+    <text x="344" y="380" text-anchor="middle" font-size="11" fill="#534AB7">longevidade, autoridade</text>
+  </g>
+
+  <!-- 2. Tráfego Pago -->
+  <path d="M160 192 L100 430" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('trafego')">
+    <rect x="10" y="430" width="188" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="104" y="448" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Tráfego pago</text>
+    <text x="104" y="466" text-anchor="middle" font-size="11" fill="#534AB7">Meta R$20K + Google R$10K</text>
+  </g>
+
+  <path d="M56 482 L30 528" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('meta')">
+    <rect x="0" y="528" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="63" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Meta Ads</text>
+    <text x="63" y="562" text-anchor="middle" font-size="11" fill="#534AB7">Dr. Ivan + Human</text>
+  </g>
+
+  <path d="M152 482 L178 528" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('google')">
+    <rect x="136" y="528" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="199" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Google Ads</text>
+    <text x="199" y="562" text-anchor="middle" font-size="11" fill="#534AB7">busca ativa · nome</text>
+  </g>
+
+  <!-- 3. Landing Pages -->
+  <path d="M225 192 Q180 580 160 600" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('lps')">
+    <rect x="30" y="600" width="188" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="124" y="618" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Landing pages</text>
+    <text x="124" y="636" text-anchor="middle" font-size="11" fill="#534AB7">LP Dr. Ivan + LP Human</text>
+  </g>
+
+  <path d="M80 652 L56 696" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('lp-ivan')">
+    <rect x="0" y="696" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="63" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">LP Dr. Ivan</text>
+    <text x="63" y="730" text-anchor="middle" font-size="11" fill="#534AB7">alta conversão</text>
+  </g>
+
+  <path d="M168 652 L192 696" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('crm')">
+    <rect x="154" y="696" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
+    <text x="217" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">CRM Fale Up</text>
+    <text x="217" y="730" text-anchor="middle" font-size="11" fill="#534AB7">LP → WA → CRM</text>
+  </g>
+
+  <!-- 4. Remarketing -->
+  <path d="M225 192 Q140 750 130 770" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <g class="node" onclick="showPanel('remarketing')">
+    <rect x="20" y="770" width="210" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="125" y="788" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Remarketing</text>
+    <text x="125" y="806" text-anchor="middle" font-size="11" fill="#534AB7">visitantes LP + engaj. Instagram</text>
+  </g>
+
+  <!-- ====== BRANCH RIGHT: MÍDIA OFFLINE ====== -->
+  <path d="M754 82 Q900 82 960 140" fill="none" stroke="#D85A30" stroke-width="2" marker-end="url(#arr-coral)"/>
+
+  <g class="node" onclick="showPanel('offline')">
+    <rect x="870" y="140" width="210" height="52" rx="10" fill="#FAECE7" stroke="#D85A30" stroke-width="1.5"/>
+    <text x="975" y="158" text-anchor="middle" font-size="14" font-weight="600" fill="#712B13">Mídia offline</text>
+    <text x="975" y="176" text-anchor="middle" font-size="11" fill="#993C1D">presença, parceria e evento</text>
+  </g>
+
+  <!-- 1. Parcerias e influencers -->
+  <path d="M975 192 L975 248" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('parcerias')">
+    <rect x="852" y="248" width="246" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+    <text x="975" y="266" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Parcerias e influencers</text>
+    <text x="975" y="284" text-anchor="middle" font-size="11" fill="#993C1D">500+ parceiros · permuta · colabs</text>
+  </g>
+
+  <path d="M916 300 L866 346" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('celebridade')">
+    <rect x="782" y="346" width="152" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="858" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Celebridade</text>
+    <text x="858" y="380" text-anchor="middle" font-size="11" fill="#993C1D">Dia das Mães · vídeo</text>
+  </g>
+
+  <path d="M1034 300 L1082 346" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('indicacao')">
+    <rect x="1000" y="346" width="152" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="1076" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Indicação</text>
+    <text x="1076" y="380" text-anchor="middle" font-size="11" fill="#993C1D">base ativa · 89% recorrência</text>
+  </g>
+
+  <!-- 2. Eventos e presença -->
+  <path d="M1040 192 L1090 430" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('eventos')">
+    <rect x="1002" y="430" width="188" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+    <text x="1096" y="448" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Eventos e presença</text>
+    <text x="1096" y="466" text-anchor="middle" font-size="11" fill="#993C1D">premium · experiência</text>
+  </g>
+
+  <path d="M1044 482 L1018 528" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('eventos-clinica')">
+    <rect x="948" y="528" width="140" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="1018" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Na clínica</text>
+    <text x="1018" y="562" text-anchor="middle" font-size="11" fill="#993C1D">talks, workshops</text>
+  </g>
+
+  <path d="M1148 482 L1162 528" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('feiras')">
+    <rect x="1074" y="528" width="126" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="1137" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Feiras premium</text>
+    <text x="1137" y="562" text-anchor="middle" font-size="11" fill="#993C1D">wellness, beleza</text>
+  </g>
+
+  <!-- 3. PR e imprensa -->
+  <path d="M975 192 Q1030 580 1020 600" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('pr')">
+    <rect x="940" y="600" width="188" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+    <text x="1034" y="618" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">PR e imprensa</text>
+    <text x="1034" y="636" text-anchor="middle" font-size="11" fill="#993C1D">matérias · podcast · TV</text>
+  </g>
+
+  <path d="M978 652 L952 696" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('midia-espec')">
+    <rect x="882" y="696" width="140" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="952" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Mídia especializada</text>
+    <text x="952" y="730" text-anchor="middle" font-size="11" fill="#993C1D">Vogue, Caras, portais</text>
+  </g>
+
+  <path d="M1090 652 L1114 696" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('podcasts')">
+    <rect x="1074" y="696" width="122" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
+    <text x="1135" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Podcasts</text>
+    <text x="1135" y="730" text-anchor="middle" font-size="11" fill="#993C1D">saúde, longevidade</text>
+  </g>
+
+  <!-- 4. Social selling -->
+  <path d="M975 192 Q1060 750 1042 770" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
+  <g class="node" onclick="showPanel('social-selling')">
+    <rect x="910" y="770" width="230" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+    <text x="1025" y="788" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Social selling + CRM</text>
+    <text x="1025" y="806" text-anchor="middle" font-size="11" fill="#993C1D">busca ativa · base dormindo</text>
+  </g>
+
+  <!-- ====== CENTER COLUMN: OPERAÇÃO ====== -->
+  <!-- Integracao on+off -->
+  <path d="M330 300 Q490 400 490 420" fill="none" stroke="#888780" stroke-width="0.8" stroke-dasharray="5 3"/>
+  <path d="M870 300 Q710 400 710 420" fill="none" stroke="#888780" stroke-width="0.8" stroke-dasharray="5 3"/>
+
+  <g class="node" onclick="showPanel('integracao')">
+    <rect x="452" y="420" width="296" height="52" rx="10" fill="#F1EFE8" stroke="#888780" stroke-width="1"/>
+    <text x="600" y="438" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">Integração on + off</text>
+    <text x="600" y="456" text-anchor="middle" font-size="11" fill="#5F5E5A">experiência coerente online e presencial</text>
+  </g>
+
+  <path d="M600 472 L600 524" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
+  <g class="node" onclick="showPanel('time')">
+    <rect x="452" y="524" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
+    <text x="600" y="542" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Time local SP</text>
+    <text x="600" y="560" text-anchor="middle" font-size="11" fill="#5F5E5A">Social Media + Videomaker — urgente</text>
+  </g>
+
+  <path d="M600 576 L600 626" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
+  <g class="node" onclick="showPanel('calendario')">
+    <rect x="452" y="626" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
+    <text x="600" y="644" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Calendário editorial</text>
+    <text x="600" y="662" text-anchor="middle" font-size="11" fill="#5F5E5A">mensal · datas · campanhas</text>
+  </g>
+
+  <path d="M600 678 L600 726" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
+  <g class="node" onclick="showPanel('relatorios')">
+    <rect x="452" y="726" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
+    <text x="600" y="744" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Relatórios semanais</text>
+    <text x="600" y="762" text-anchor="middle" font-size="11" fill="#5F5E5A">leads · CPL · ROAS · conversão</text>
+  </g>
+
+  <!-- ====== RESULTADOS (bottom) ====== -->
+  <path d="M600 778 L600 836" fill="none" stroke="#1D9E75" stroke-width="2" marker-end="url(#arr-teal)"/>
+
+  <g class="node" onclick="showPanel('resultados')">
+    <rect x="400" y="836" width="400" height="56" rx="12" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+    <text x="600" y="856" text-anchor="middle" font-size="15" font-weight="600" fill="#085041">Resultados esperados</text>
+    <text x="600" y="876" text-anchor="middle" font-size="12" fill="#0F6E56">R$4,6M → R$7M/mês · 200–350 leads/mês</text>
+  </g>
+
+  <!-- resultado sub -->
+  <path d="M462 892 L340 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
+  <g class="node" onclick="showPanel('meta-fat')">
+    <rect x="240" y="940" width="200" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+    <text x="340" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Meta faturamento</text>
+    <text x="340" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">R$7M/mês · 6–12 meses</text>
+  </g>
+
+  <path d="M540 892 L520 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
+  <g class="node" onclick="showPanel('qualidade-leads')">
+    <rect x="430" y="940" width="180" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+    <text x="520" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Qualidade leads</text>
+    <text x="520" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">público AAA · CPL R$100–200</text>
+  </g>
+
+  <path d="M660 892 L680 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
+  <g class="node" onclick="showPanel('autoridade')">
+    <rect x="590" y="940" width="180" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+    <text x="680" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Autoridade Dr. Ivan</text>
+    <text x="680" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">referência nacional</text>
+  </g>
+
+  <path d="M738 892 L860 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
+  <g class="node" onclick="showPanel('recorrencia')">
+    <rect x="760" y="940" width="200" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+    <text x="860" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Recorrência</text>
+    <text x="860" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">manter 89% · upsell base</text>
+  </g>
+
+  <!-- ====== FOOTER NOTE ====== -->
+  <text x="600" y="1046" text-anchor="middle" font-size="12" fill="#B4B2A9">Clique em qualquer nó para ver detalhes</text>
+
+</svg>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip"></div>
+
+<!-- Detail panel -->
+<div id="panel">
+  <button id="panel-close" onclick="closePanel()">×</button>
+  <span id="panel-tag"></span>
+  <div id="panel-title"></div>
+  <div id="panel-body"></div>
+  <ul id="panel-items"></ul>
+</div>
+
+<script>
+const data = {
+  center: {
+    tag: 'Núcleo', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Human Clinic SP · Dr. Ivan Rollemberg',
+    body: 'Faturamento atual: ~R$4,6M/mês. Meta: R$7M/mês. O Dr. Ivan é o maior ativo da clínica — ticket médio de R$50–60K. A estratégia cobre exclusivamente os perfis do Dr. Ivan e da Human Clinic SP.',
+    items: ['Tema unificador: longevidade em toda comunicação', 'Dois perfis integrados: Dr. Ivan + Human institucional', 'Budget de tráfego: R$30K/mês (Meta + Google)', 'Taxa de recorrência atual: 89%']
+  },
+  longevidade: {
+    tag: 'Estratégia central', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Tema unificador: longevidade',
+    body: 'Longevidade eleva a conversa de "procedimento estético" para "investimento em saúde e qualidade de vida". Justifica o ticket premium, filtra o público pelo perfil correto e cria coerência entre todos os canais.',
+    items: ['Aplicar em todos os conteúdos: orgânico, anúncios, LPs', 'Primeira execução: campanha Dia das Mães com celebridade', 'Roteiro de gravação conectado ao conceito macro', 'Experiência online e presencial alinhadas ao mesmo discurso']
+  },
+  online: {
+    tag: 'Mídia online', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Estratégia de mídia online',
+    body: 'Tráfego pago no Meta e Google, conteúdo orgânico no Instagram do Dr. Ivan e da Human, landing pages otimizadas para conversão e remarketing para reimpactar leads que não converteram.',
+    items: ['Meta Ads: R$20K/mês — campanhas Dr. Ivan + Human + remarketing', 'Google Ads: R$10K/mês — busca ativa por nome e procedimento', 'Instagram: 3 reels + 2 feeds + stories diários', 'LPs: LP Dr. Ivan + LP Human Clinic conectadas ao WhatsApp']
+  },
+  instagram: {
+    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Instagram Dr. Ivan',
+    body: 'Perfil de autoridade e desejo. A estratégia é criar pautas abertas que o Dr. Ivan possa desenvolver no seu estilo. Nunca roteiros fechados.',
+    items: ['3 reels/semana — espontâneos, bastidores, opiniões', '2 feeds/semana — carrosseis educativos ou fotos premium', 'Stories diários — rotina, cultura, lifestyle', 'Pautas: longevidade, autoridade médica, bastidores de protocolo']
+  },
+  bastidores: {
+    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Conteúdo de bastidores',
+    body: 'O Dr. Ivan é uma mente criativa. O melhor conteúdo dele é espontâneo — bastidores de atendimento, processo criativo de um protocolo, o que o inspira.',
+    items: ['Bastidores de como pensa um protocolo exclusivo', 'O que aprendi nos últimos 15 anos de medicina estética', 'Rotina e o que faz para cuidar da própria longevidade', 'Referências que o inspiram (viagens, eventos, cultura)']
+  },
+  pautas: {
+    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Pautas abertas de autoridade',
+    body: 'Pautas prontas para o Dr. Ivan desenvolver no seu ritmo e estilo. São gatilhos, não roteiros.',
+    items: ['Por que medicina estética não é vaidade — é investimento', 'O que ninguém te conta sobre procedimentos baratos', 'Longevidade: o que muda no seu rosto nos 40, 50 e 60 anos', 'A diferença entre estética e medicina estética', 'Transformação de paciente: a história por trás do resultado']
+  },
+  trafego: {
+    tag: 'Tráfego pago', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Tráfego pago — estrutura',
+    body: 'R$30K/mês divididos entre Meta e Google. O público do Dr. Ivan é de ticket muito alto — o foco é qualidade, não volume máximo de leads.',
+    items: ['Meta Ads R$20K: campanhas Dr. Ivan, Human, Dia das Mães, remarketing', 'Google Ads R$10K: captura de demanda ativa e buscas pelo nome', 'CPL alvo: R$100–200 (público AAA)', 'Meta leads/mês: 150–250 leads qualificados']
+  },
+  meta: {
+    tag: 'Meta Ads', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Campanhas Meta Ads',
+    body: '4 campanhas ativas: Dia das Mães/longevidade (urgente), Dr. Ivan autoridade (sempre-ativo), Human institucional (sempre-ativo), e remarketing.',
+    items: ['Camp. 1 urgente: Dia das Mães com celebridade + mãe', 'Camp. 2: Dr. Ivan — vídeo, bastidores, depoimento de paciente', 'Camp. 3: Human Clinic — institucional, prova social, estrutura', 'Camp. 4: Remarketing — visitantes LP + engajamento Instagram']
+  },
+  google: {
+    tag: 'Google Ads', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Google Ads — busca ativa',
+    body: 'Captura de quem já está procurando. Menor volume, porém intenção de compra muito mais alta. Prioridade: nome do Dr. Ivan e procedimentos exclusivos.',
+    items: ['Keywords: dr ivan rollemberg, human clinic SP', 'Keywords: médico estética SP alto padrão, longevidade SP', 'Extensões: sitelinks por especialidade + chamada WhatsApp', 'Extensão de localização: 3 unidades SP']
+  },
+  lps: {
+    tag: 'Landing pages', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Estrutura de landing pages',
+    body: 'Duas LPs principais conectadas a um canal único de entrada (WhatsApp → CRM Fale Up). Todo tráfego entra por um ponto central.',
+    items: ['LP Dr. Ivan: foto impactante + credenciais + vídeo + depoimentos + CTA', 'LP Human: longevidade + especialidades + prova social + FAQ', 'Rastreamento: UTM + Pixel Meta + Tag Google em todas as LPs', 'Evento de conversão: clique no WhatsApp = lead registrado']
+  },
+  'lp-ivan': {
+    tag: 'LP Dr. Ivan', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'LP Dr. Ivan — alta conversão',
+    body: 'Página de autoridade e desejo. Tom aspiracional e exclusivo. Justifica o investimento antes do contato.',
+    items: ['Hero: foto impactante + headline de autoridade', 'Credenciais: formação, anos, reconhecimento internacional', 'Vídeo do Dr. Ivan falando diretamente ao paciente', 'Depoimentos de pacientes em vídeo ou texto', 'CTA com senso de exclusividade: "agenda limitada"']
+  },
+  crm: {
+    tag: 'Funil', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Conexão LP → CRM Fale Up',
+    body: 'Todo lead gerado pelo tráfego entra via WhatsApp e é gerido pelo CRM Fale Up pelo setor de agendamento.',
+    items: ['LP → botão WhatsApp (11 943339843)', 'WhatsApp → CRM Fale Up → setor agendamento', 'Agendamento confirmado → consulta médica', 'Consulta → comercial → fechamento → pós-venda']
+  },
+  remarketing: {
+    tag: 'Remarketing', tagBg: '#EEEDFE', tagColor: '#3C3489',
+    title: 'Campanhas de remarketing',
+    body: 'Reimpacto de quem demonstrou interesse mas não converteu. Mensagens mais diretas e específicas.',
+    items: ['Visitantes da LP do Dr. Ivan (últimos 30 dias)', 'Assistiu 50%+ do vídeo principal do Dr. Ivan', 'Engajou com o perfil Instagram (ambos)', 'Mensagem: "Agenda do Dr. Ivan — vagas limitadas"']
+  },
+  offline: {
+    tag: 'Mídia offline', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Estratégia de mídia offline',
+    body: 'Os canais offline constroem autoridade de longo prazo e geram o desejo de estar na cadeira do Dr. Ivan. Inclui parcerias, eventos, PR e social selling.',
+    items: ['Parcerias e influencers: 500+ parceiros · permuta · colabs', 'Eventos na clínica: talks e workshops de longevidade', 'PR e imprensa: matérias, podcasts, TV, revistas premium', 'Social selling: busca ativa na base dormindo']
+  },
+  parcerias: {
+    tag: 'Parcerias', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Parcerias e influencers',
+    body: 'A Human já tem mais de 500 parceiros no Brasil com diferentes formatos. A estratégia é ativar esse ativo de forma coordenada com o tema de longevidade.',
+    items: ['Permuta: influencer recebe procedimento e divulga', 'Colabs com celebridades (Dia das Mães como primeiro exemplo)', 'Parcerias com salões de beleza e clínicas parceiras', 'Sistema de indicação ativo: base de pacientes (89% recorrência)']
+  },
+  celebridade: {
+    tag: 'Urgente', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Campanha Dia das Mães com celebridade',
+    body: 'Primeiro entregável do novo posicionamento. Gravação de celebridade + mãe conectada ao tema macro de longevidade. Executar 2–3 semanas antes do Dia das Mães.',
+    items: ['Roteiro: conectar o tema longevidade à história da celebridade', 'Formatos: vídeo principal + cortes para reels + carrossel', 'Usar em: anúncios Meta, stories, feed Instagram, LP Human']
+  },
+  indicacao: {
+    tag: 'Indicação', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Sistema de indicação ativo',
+    body: 'A base atual da clínica é o maior ativo de captação. Taxa de 89% de recorrência — ativar esse canal de forma estruturada pode acelerar muito o crescimento.',
+    items: ['Criar programa formal de indicação com benefício para o indicador', 'Ativar base de pacientes dormentes com campanha segmentada', 'Lookalike no Meta criado a partir da lista de pacientes que fecharam', 'Pedir lista de clientes ao cliente (pendência crítica)']
+  },
+  eventos: {
+    tag: 'Eventos', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Eventos e presença premium',
+    body: 'Presença física da marca em espaços de luxo e bem-estar. Eventos próprios na clínica e participação em feiras do segmento.',
+    items: ['Talks na clínica sobre longevidade com o Dr. Ivan', 'Workshops de medicina preventiva para pacientes e parceiros', 'Participação em feiras de wellness e beleza premium em SP', 'Presença em eventos de lifestyle AAA (moda, gastronomia, arte)']
+  },
+  'eventos-clinica': {
+    tag: 'Eventos próprios', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Eventos na clínica',
+    body: 'A clínica vira palco. Eventos exclusivos para pacientes e convidados — cria comunidade, gera conteúdo e fortalece a percepção premium.',
+    items: ['Talk do Dr. Ivan sobre longevidade (para pacientes atuais)', 'Workshop fechado: "como planejar 10 anos de longevidade"', 'Cocktail de lançamento de nova tecnologia na clínica', 'Conteúdo gerado pelos eventos vira reel e carrossel']
+  },
+  feiras: {
+    tag: 'Feiras', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Feiras e eventos premium',
+    body: 'Presença em eventos onde o público-alvo da Human naturalmente está.',
+    items: ['Feiras de wellness e saúde integrativa em SP', 'Eventos de moda e lifestyle premium', 'Congressos médicos de medicina estética', 'Espaços de exposição em shoppings e clientes parceiros AAA']
+  },
+  pr: {
+    tag: 'PR', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'PR e assessoria de imprensa',
+    body: 'Posicionar o Dr. Ivan como maior referência de medicina estética do Brasil. Presença em veículos de alto alcance e credibilidade.',
+    items: ['Matérias em Vogue, Caras, Glamour, Elle — foco longevidade', 'Entrevistas em portais de saúde e bem-estar (UOL, G1, etc.)', 'Participações em podcasts de saúde, longevidade e lifestyle', 'Pautas para TV (Fantástico, GNT, Band News) sobre medicina estética']
+  },
+  'midia-espec': {
+    tag: 'Imprensa', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Mídia especializada',
+    body: 'Revistas e portais do universo da beleza e saúde premium — onde o público-alvo da Human busca referências.',
+    items: ['Vogue Brasil: matéria sobre longevidade com o Dr. Ivan', 'Caras: perfil do Dr. Ivan e casos de transformação', 'Portais UOL, G1 Saúde: reportagens sobre medicina estética', 'Blogs e influencers de beleza AAA para resenhas e matérias']
+  },
+  podcasts: {
+    tag: 'Podcasts', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Estratégia de podcasts',
+    body: 'O Dr. Ivan como convidado em podcasts de alto alcance nos temas saúde, longevidade e lifestyle premium.',
+    items: ['Podcasts de saúde: Flow, PodPeople, Café da Manhã', 'Podcasts de longevidade e bem-estar com audiência AAA', 'Criar próprio podcast da Human sobre longevidade (médio prazo)', 'Cada episódio vira recortes de conteúdo para o Instagram']
+  },
+  'social-selling': {
+    tag: 'Social selling', tagBg: '#FAECE7', tagColor: '#712B13',
+    title: 'Social selling e CRM ativo',
+    body: 'Ativação da base dormente e busca ativa de novos pacientes por meio de abordagem consultiva e personalizada.',
+    items: ['Reativar pacientes que não voltaram há mais de 6 meses', 'Closers com números profissionais para contato personalizado', 'Abordagem consultiva: entender onde o paciente está na jornada', 'Conectar social selling aos anúncios de remarketing']
+  },
+  integracao: {
+    tag: 'Operação', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Integração on + off',
+    body: 'O maior risco é a incoerência: o paciente vê um anúncio premium online, chega na clínica e a experiência não corresponde. A estratégia une os dois mundos.',
+    items: ['Mesma linguagem em anúncios, Instagram, recepção e consultório', 'Pós-venda alinhado ao tom de marca (sofisticado, exclusivo)', 'Conteúdo criado nos eventos offline vira post e anúncio online', 'Feedback do comercial e closers alimenta criativos de tráfego']
+  },
+  time: {
+    tag: 'Urgente', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Contratações urgentes — time local SP',
+    body: 'A estrutura atual não suporta a demanda de conteúdo. Felipe Meireles inicia o processo seletivo imediatamente.',
+    items: ['Social Media local SP: gestão de feed, stories e copy', 'Videomaker/Editor local SP: gravação e edição de reels', 'Iniciar trabalho com recursos internos enquanto contrata', 'Perfis devem entender posicionamento premium e medicina']
+  },
+  calendario: {
+    tag: 'Operação', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Calendário editorial mensal',
+    body: 'Planejamento de conteúdo mês a mês, alinhado ao calendário comercial da clínica e datas relevantes.',
+    items: ['Datas fixas: Dia das Mães, Dia das Mulheres, Natal, Verão', 'Campanhas do cliente integradas ao calendário de conteúdo', 'Revisão mensal com aprovação do cliente antes da execução', 'Dois calendários: central da clínica + datas premium (solicitar)']
+  },
+  relatorios: {
+    tag: 'Gestão', tagBg: '#F1EFE8', tagColor: '#444441',
+    title: 'Relatórios semanais',
+    body: 'A equipe atua como time de marketing interno da Human. Os resultados são responsabilidade da equipe — os relatórios precisam mostrar isso com clareza.',
+    items: ['Leads gerados por campanha e plataforma', 'CPL (custo por lead) por especialidade', 'Taxa de agendamento e taxa de fechamento', 'ROAS e faturamento atribuído ao tráfego pago']
+  },
+  resultados: {
+    tag: 'Resultados', tagBg: '#E1F5EE', tagColor: '#085041',
+    title: 'Resultados esperados',
+    body: 'A meta é crescer de R$4,6M para R$7M mensais. Para isso, a estratégia combina aumento de volume de leads qualificados com fortalecimento de autoridade e manutenção da alta recorrência.',
+    items: ['Faturamento: R$7M/mês em 6–12 meses', 'Volume: 200–350 leads qualificados/mês', 'Qualidade: público AAA · CPL R$100–200', 'Autoridade: Dr. Ivan como referência nacional', 'Recorrência: manter os 89% e ampliar upsell']
+  },
+  'meta-fat': {
+    tag: 'Meta', tagBg: '#E1F5EE', tagColor: '#085041',
+    title: 'Meta de faturamento',
+    body: 'De R$4,6M para R$7M mensais. O crescimento precisa vir de novos pacientes premium e do aumento de ticket dos pacientes atuais.',
+    items: ['Milestone 6 meses: R$5,5–6M/mês', 'Milestone 12 meses: R$7M/mês', 'Alavancas: volume de leads + qualidade + upsell da base', 'KPI semanal: receita atribuída ao tráfego pago']
+  },
+  'qualidade-leads': {
+    tag: 'Leads', tagBg: '#E1F5EE', tagColor: '#085041',
+    title: 'Qualidade de leads',
+    body: 'O público do Dr. Ivan paga R$50–60K. Volume alto de leads baratos não resolve — o foco é atrair o perfil certo.',
+    items: ['Público: mulheres 35–60 anos, AAA, bairros premium SP', 'CPL alvo: R$100–200 (aceitar CPL mais alto por qualidade)', 'Segmentação: interesses saúde, luxo, longevidade, bem-estar', 'Lookalike: criar a partir da base de pacientes que fecharam']
+  },
+  autoridade: {
+    tag: 'Autoridade', tagBg: '#E1F5EE', tagColor: '#085041',
+    title: 'Autoridade nacional do Dr. Ivan',
+    body: 'O objetivo não é só vender mais — é transformar o Dr. Ivan no maior nome de medicina estética do Brasil. Isso multiplica o valor percebido e justifica qualquer ticket.',
+    items: ['Presença em mídia nacional (TV, revistas, podcasts grandes)', 'Instagram como vitrine de autoridade e estilo de vida', 'Colabs com celebridades e figuras de referência', 'Conteúdo que mostra a profundidade clínica e criativa do Dr. Ivan']
+  },
+  recorrencia: {
+    tag: 'Recorrência', tagBg: '#E1F5EE', tagColor: '#085041',
+    title: 'Recorrência e upsell da base',
+    body: 'Com 89% de recorrência, a base existente é o maior ativo. A estratégia é manter e ampliar esse número com upsell de protocolos e novos tratamentos.',
+    items: ['Reativar pacientes dormentes com campanha personalizada', 'Upsell: apresentar novos procedimentos para pacientes ativos', 'Pós-venda estruturado: mensagem de acompanhamento pós-procedimento', 'Programa de indicação: paciente que indica ganha benefício']
+  }
+};
+
+const panel = document.getElementById('panel');
+const tag = document.getElementById('panel-tag');
+const title = document.getElementById('panel-title');
+const body = document.getElementById('panel-body');
+const items = document.getElementById('panel-items');
+
+function showPanel(key) {
+  const d = data[key];
+  if (!d) return;
+  tag.textContent = d.tag;
+  tag.style.background = d.tagBg;
+  tag.style.color = d.tagColor;
+  title.textContent = d.title;
+  body.textContent = d.body;
+  items.innerHTML = d.items.map(i => `<li>${i}</li>`).join('');
+  panel.classList.add('open');
+}
+
+function closePanel() {
+  panel.classList.remove('open');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+</script>
+</body>
+</html>
