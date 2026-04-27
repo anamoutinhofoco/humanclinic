@@ -3,731 +3,1742 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Human Clinic SP — Mapa Mental de Marketing</title>
+<title>Human Clinic — Mídia Offline 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #F5F2EC;
+  --dark: #111010;
+  --gold: #B8965A;
+  --gold-light: #D4B07C;
+  --gold-pale: #F0E6D3;
+  --warm-white: #FDFAF5;
+  --mid: #6B6560;
+  --line: rgba(184,150,90,0.25);
+  --red-accent: #8B3A2A;
+  --green-accent: #2A5C45;
+  --green-light: #EAF2EC;
+  --red-light: #F5EAE8;
+}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: #f8f7f4;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  header {
-    background: #fff;
-    border-bottom: 0.5px solid #d3d1c7;
-    padding: 18px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+html { scroll-behavior: smooth; }
 
-  .header-left h1 {
-    font-size: 17px;
-    font-weight: 600;
-    color: #1A5FA8;
-    letter-spacing: -0.01em;
-  }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  font-size: 15px;
+  line-height: 1.6;
+}
 
-  .header-left p {
-    font-size: 12px;
-    color: #888780;
-    margin-top: 2px;
-  }
+/* ─── HEADER ─── */
+.site-header {
+  background: var(--dark);
+  color: var(--warm-white);
+  padding: 0 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-  .legend {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  letter-spacing: .12em;
+  font-weight: 400;
+  color: var(--gold-light);
+}
 
-  .leg {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #5f5e5a;
-  }
+.header-nav {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
 
-  .leg-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 3px;
-    flex-shrink: 0;
-  }
+.header-nav a {
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  transition: color .2s;
+}
+.header-nav a:hover { color: var(--gold-light); }
 
-  .map-container {
-    padding: 32px 24px 60px;
-    overflow-x: auto;
-  }
+.header-badge {
+  font-size: 11px;
+  letter-spacing: .06em;
+  color: rgba(255,255,255,.35);
+  border: .5px solid rgba(255,255,255,.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
 
-  svg.mindmap {
-    display: block;
-    margin: 0 auto;
-    max-width: 1200px;
-    width: 100%;
-    overflow: visible;
-  }
+/* ─── HERO ─── */
+.hero {
+  background: var(--dark);
+  color: var(--warm-white);
+  padding: 100px 60px 80px;
+  position: relative;
+  overflow: hidden;
+}
 
-  .node {
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
+.hero-bg-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 
-  .node:hover > rect,
-  .node:hover > ellipse,
-  .node:hover > circle {
-    opacity: 0.82;
-  }
+.hero-label {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-  /* tooltip */
-  #tooltip {
-    position: fixed;
-    background: #fff;
-    border: 0.5px solid #d3d1c7;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: #5f5e5a;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s;
-    max-width: 220px;
-    line-height: 1.5;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
+.hero-label::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: .5px;
+  background: var(--gold);
+}
 
-  /* panel */
-  #panel {
-    position: fixed;
-    right: 0; top: 0; bottom: 0;
-    width: 340px;
-    background: #fff;
-    border-left: 0.5px solid #d3d1c7;
-    padding: 24px 24px 32px;
-    transform: translateX(100%);
-    transition: transform 0.25s cubic-bezier(.4,0,.2,1);
-    z-index: 50;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -.01em;
+  max-width: 760px;
+  margin-bottom: 32px;
+}
 
-  #panel.open { transform: translateX(0); }
+.hero-title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
 
-  #panel-close {
-    position: absolute;
-    top: 16px; right: 16px;
-    background: none;
-    border: 0.5px solid #d3d1c7;
-    border-radius: 6px;
-    width: 28px; height: 28px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #888780;
-    display: flex; align-items: center; justify-content: center;
-  }
+.hero-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,.55);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 60px;
+}
 
-  #panel-close:hover { background: #f1efe8; }
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,.08);
+  border: .5px solid rgba(255,255,255,.08);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 800px;
+}
 
-  #panel-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-    width: fit-content;
-  }
+.kpi-block {
+  background: rgba(255,255,255,.04);
+  padding: 24px 28px;
+  transition: background .2s;
+}
+.kpi-block:hover { background: rgba(255,255,255,.07); }
 
-  #panel-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a1a1a;
-    line-height: 1.3;
-  }
+.kpi-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
 
-  #panel-body {
-    font-size: 14px;
-    color: #5f5e5a;
-    line-height: 1.7;
-  }
+.kpi-l {
+  font-size: 12px;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .03em;
+}
 
-  #panel-items {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+/* ─── INSIGHT BOX ─── */
+.insight {
+  background: var(--warm-white);
+  border-left: 3px solid var(--gold);
+  padding: 20px 28px;
+  margin: 60px 60px 0;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
 
-  #panel-items li {
-    font-size: 13px;
-    color: #3d3d3a;
-    padding: 7px 10px;
-    background: #f8f7f4;
-    border-radius: 6px;
-    border-left: 2px solid #d3d1c7;
-    line-height: 1.5;
-  }
+.insight-icon {
+  width: 20px;
+  height: 20px;
+  background: var(--gold-pale);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
+.insight-icon::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+}
 
-  .kpi-card {
-    background: #f1efe8;
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
+.insight p {
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.7;
+}
 
-  .kpi-label { font-size: 11px; color: #888780; }
-  .kpi-value { font-size: 18px; font-weight: 600; color: #1A5FA8; margin-top: 2px; }
+.insight strong { color: var(--dark); font-weight: 500; }
 
-  @media (max-width: 600px) {
-    #panel { width: 100%; }
-    header { padding: 12px 16px; flex-direction: column; gap: 10px; align-items: flex-start; }
-  }
+/* ─── SECTION ─── */
+.section {
+  padding: 80px 60px;
+}
+
+.section + .section {
+  border-top: .5px solid var(--line);
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+.section-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 72px;
+  font-weight: 300;
+  color: var(--gold-pale);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.section-meta { flex: 1; }
+
+.section-category {
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.section-desc {
+  font-size: 14px;
+  color: var(--mid);
+  margin-top: 8px;
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* ─── EVENT CARDS ─── */
+.events-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.event-row {
+  background: var(--warm-white);
+  border: .5px solid rgba(0,0,0,.06);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.event-row:hover { border-color: var(--gold); }
+.event-row.open { border-color: var(--gold); }
+
+.event-summary {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+  gap: 0;
+  align-items: center;
+  padding: 20px 28px;
+}
+
+.event-info { }
+.event-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.event-date {
+  font-size: 12px;
+  color: var(--mid);
+}
+
+.event-stat { padding: 0 16px; border-left: .5px solid rgba(0,0,0,.06); }
+.event-stat-l { font-size: 11px; color: var(--mid); margin-bottom: 3px; }
+.event-stat-v {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+}
+.event-stat-v.good { color: var(--green-accent); }
+.event-stat-v.cost { color: var(--red-accent); }
+.event-stat-v.neutral { color: var(--dark); }
+
+.event-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+  text-align: center;
+}
+.badge-priority { background: #2A5C45; color: #EAF2EC; }
+.badge-roi { background: #B8965A; color: #FDF8F0; }
+.badge-partner { background: #8B3A2A; color: #F5EAE8; }
+.badge-culture { background: #3A4A6B; color: #E8ECF5; }
+.badge-vip { background: #4A3A6B; color: #EDE8F5; }
+
+.event-detail {
+  display: none;
+  padding: 0 28px 24px;
+  border-top: .5px solid rgba(0,0,0,.06);
+  margin-top: -1px;
+}
+.event-row.open .event-detail { display: block; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.detail-box {
+  background: var(--cream);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.detail-box-title {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 10px;
+}
+
+.detail-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detail-items li {
+  font-size: 13px;
+  color: var(--dark);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.detail-items li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.detail-desc {
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.7;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: .5px solid rgba(0,0,0,.06);
+}
+
+/* ─── FUNNEL VISUAL ─── */
+.funnel-section {
+  background: var(--dark);
+  color: var(--warm-white);
+  padding: 80px 60px;
+}
+
+.funnel-section .section-number { color: rgba(184,150,90,.2); }
+.funnel-section .section-title { color: var(--warm-white); }
+.funnel-section .section-category { color: var(--gold); }
+.funnel-section .section-desc { color: rgba(255,255,255,.5); }
+
+.funnel-visual {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  margin-top: 40px;
+}
+
+.funnel-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.funnel-step::after {
+  content: '→';
+  position: absolute;
+  right: -12px;
+  top: 40px;
+  color: rgba(255,255,255,.2);
+  font-size: 16px;
+}
+.funnel-step:last-child::after { display: none; }
+
+.funnel-bar-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.funnel-bar {
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 12px;
+  width: 80%;
+}
+
+.funnel-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--gold-light);
+}
+
+.funnel-unit {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  margin-top: 2px;
+}
+
+.funnel-step-label {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  line-height: 1.4;
+}
+
+.funnel-step-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin-top: 3px;
+}
+
+/* ─── EXPERIENCE CARDS ─── */
+.exp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.exp-card {
+  background: var(--warm-white);
+  border: .5px solid rgba(0,0,0,.06);
+  border-radius: 4px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color .2s;
+}
+.exp-card:hover { border-color: var(--gold); }
+.exp-card.hero-card { border: 1.5px solid var(--gold); }
+
+.exp-card-tag {
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.exp-card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.exp-card-freq {
+  font-size: 12px;
+  color: var(--mid);
+}
+
+.exp-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.exp-stat {
+  background: var(--cream);
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+
+.exp-stat-l { font-size: 11px; color: var(--mid); margin-bottom: 3px; }
+.exp-stat-v {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--dark);
+}
+.exp-stat-v.g { color: var(--green-accent); }
+.exp-stat-v.r { color: var(--red-accent); }
+
+.exp-divider { border: none; border-top: .5px solid rgba(0,0,0,.06); }
+
+.exp-funnel {
+  display: flex;
+  gap: 3px;
+}
+
+.exp-funnel-step {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.exp-desc {
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+
+/* ─── ROI TABLE ─── */
+.roi-section { background: var(--warm-white); }
+
+.roi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.roi-table thead th {
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  font-weight: 400;
+  padding: 0 20px 16px;
+  text-align: left;
+  border-bottom: .5px solid var(--line);
+}
+
+.roi-table thead th:not(:first-child) { text-align: right; }
+
+.roi-table tbody tr {
+  border-bottom: .5px solid rgba(0,0,0,.05);
+  transition: background .15s;
+}
+.roi-table tbody tr:hover { background: var(--cream); }
+.roi-table tbody tr:last-child { border-bottom: none; }
+
+.roi-table tbody td {
+  padding: 16px 20px;
+  vertical-align: middle;
+}
+.roi-table tbody td:not(:first-child) { text-align: right; }
+
+.roi-frente { font-weight: 500; }
+.roi-sub { font-size: 12px; color: var(--mid); margin-top: 2px; }
+.val-good { color: var(--green-accent); font-weight: 500; }
+.val-cost { color: var(--red-accent); }
+.roi-total {
+  background: var(--dark) !important;
+  color: var(--warm-white);
+}
+.roi-total td { padding: 20px; }
+.roi-total .val-good { color: #7BCCA0; }
+.roi-total .val-cost { color: #E0907A; }
+
+/* ─── TIMELINE ─── */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: var(--line);
+}
+
+.tl-item {
+  position: relative;
+  padding-bottom: 36px;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+.tl-item:last-child { padding-bottom: 0; }
+
+.tl-dot {
+  position: absolute;
+  left: -37px;
+  top: 5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--warm-white);
+  outline: 1px solid var(--line);
+}
+
+.tl-month {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark);
+  padding-top: 2px;
+}
+
+.tl-period {
+  font-size: 11px;
+  color: var(--mid);
+  margin-top: 2px;
+}
+
+.tl-content { }
+
+.tl-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.tl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: .5px solid rgba(0,0,0,.1);
+  color: var(--mid);
+}
+.chip.cost { border-color: rgba(139,58,42,.3); color: var(--red-accent); }
+.chip.leads { border-color: rgba(42,92,69,.3); color: var(--green-accent); }
+.chip.focus { border-color: rgba(184,150,90,.4); color: var(--gold); }
+
+.tl-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+/* ─── FOOTER ─── */
+.site-footer {
+  background: var(--dark);
+  color: rgba(255,255,255,.35);
+  padding: 40px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: var(--gold);
+  letter-spacing: .1em;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate { opacity: 0; }
+.animate.visible { animation: fadeUp .6s ease forwards; }
+
+/* stagger delays */
+.delay-1 { animation-delay: .1s; }
+.delay-2 { animation-delay: .2s; }
+.delay-3 { animation-delay: .3s; }
+.delay-4 { animation-delay: .4s; }
+
+@media (max-width: 900px) {
+  .site-header { padding: 0 24px; }
+  .header-nav { display: none; }
+  .hero { padding: 60px 24px; }
+  .kpi-strip { grid-template-columns: repeat(2,1fr); }
+  .insight { margin: 40px 24px 0; }
+  .section { padding: 60px 24px; }
+  .funnel-section { padding: 60px 24px; }
+  .event-summary { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .exp-grid { grid-template-columns: 1fr; }
+  .funnel-visual { grid-template-columns: repeat(3,1fr); }
+  .detail-grid { grid-template-columns: 1fr; }
+  .tl-item { grid-template-columns: 70px 1fr; }
+  .site-footer { flex-direction: column; gap: 12px; text-align: center; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <h1>Human Clinic SP · Dr. Ivan Rollemberg</h1>
-    <p>Mapa mental de marketing — mídia on + off · Abril 2026</p>
-  </div>
-  <div class="legend">
-    <div class="leg"><div class="leg-dot" style="background:#534AB7;"></div>Mídia online</div>
-    <div class="leg"><div class="leg-dot" style="background:#D85A30;"></div>Mídia offline</div>
-    <div class="leg"><div class="leg-dot" style="background:#1D9E75;"></div>Resultados</div>
-    <div class="leg"><div class="leg-dot" style="background:#888780;"></div>Operação</div>
-  </div>
+<header class="site-header">
+  <div class="logo">HUMAN CLINIC SP</div>
+  <nav>
+    <ul class="header-nav">
+      <li><a href="#eventos">Eventos AAA</a></li>
+      <li><a href="#experiencias">Experiências</a></li>
+      <li><a href="#funil">Funil</a></li>
+      <li><a href="#roi">ROI</a></li>
+      <li><a href="#calendario">Calendário</a></li>
+    </ul>
+  </nav>
+  <div class="header-badge">Mídia Offline 2026</div>
 </header>
 
-<div class="map-container">
-<svg class="mindmap" viewBox="0 0 1200 1060" role="img" xmlns="http://www.w3.org/2000/svg">
-  <title>Mapa mental Human Clinic SP — Dr. Ivan Rollemberg</title>
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-bg-line" viewBox="0 0 1400 500" preserveAspectRatio="none">
+    <line x1="0" y1="500" x2="1400" y2="0" stroke="rgba(184,150,90,0.06)" stroke-width="1"/>
+    <line x1="700" y1="500" x2="1400" y2="200" stroke="rgba(184,150,90,0.04)" stroke-width="1"/>
+  </svg>
+  <div class="hero-label animate">Planejamento estratégico · Dr. Ivan Rollemberg</div>
+  <h1 class="hero-title animate delay-1">Mídia <em>offline.</em><br>Menos leads.<br>Mais certos.</h1>
+  <p class="hero-sub animate delay-2">O offline não compete com o tráfego pago em volume. Compete em qualidade — pacientes que chegam com intenção formada, ciclo de venda mais curto e ticket de R$50–60K.</p>
+  <div class="kpi-strip animate delay-3">
+    <div class="kpi-block">
+      <div class="kpi-n">8–20</div>
+      <div class="kpi-l">leads qualificados / mês</div>
+    </div>
+    <div class="kpi-block">
+      <div class="kpi-n">35–55%</div>
+      <div class="kpi-l">taxa de fechamento</div>
+    </div>
+    <div class="kpi-block">
+      <div class="kpi-n">R$3,3–7,5M</div>
+      <div class="kpi-l">receita potencial / ano</div>
+    </div>
+    <div class="kpi-block">
+      <div class="kpi-n">R$180–400K</div>
+      <div class="kpi-l">investimento total / ano</div>
+    </div>
+  </div>
+</section>
 
-  <defs>
-    <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-    <marker id="arr-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-    <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-    <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-  </defs>
-
-  <!-- ====== CENTER ====== -->
-  <g class="node" onclick="showPanel('center')">
-    <ellipse cx="600" cy="100" rx="168" ry="50" fill="#F1EFE8" stroke="#888780" stroke-width="1.5"/>
-    <text x="600" y="92" text-anchor="middle" font-size="16" font-weight="600" fill="#2C2C2A">Human Clinic SP</text>
-    <text x="600" y="112" text-anchor="middle" font-size="12" fill="#5F5E5A">Dr. Ivan · longevidade</text>
-  </g>
-
-  <!-- ====== LONGEVIDADE PILL (top) ====== -->
-  <path d="M600 50 L600 20" fill="none" stroke="#888780" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr-gray)"/>
-  <g class="node" onclick="showPanel('longevidade')">
-    <rect x="462" y="0" width="276" height="32" rx="16" fill="#D3D1C7" stroke="#888780" stroke-width="0.5"/>
-    <text x="600" y="20" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A" dominant-baseline="central">Tema unificador: longevidade</text>
-  </g>
-
-  <!-- ====== BRANCH LEFT: MÍDIA ONLINE ====== -->
-  <path d="M446 82 Q300 82 240 140" fill="none" stroke="#534AB7" stroke-width="2" marker-end="url(#arr-purple)"/>
-
-  <!-- Online branch node -->
-  <g class="node" onclick="showPanel('online')">
-    <rect x="120" y="140" width="210" height="52" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
-    <text x="225" y="158" text-anchor="middle" font-size="14" font-weight="600" fill="#3C3489">Mídia online</text>
-    <text x="225" y="176" text-anchor="middle" font-size="11" fill="#534AB7">tráfego + conteúdo orgânico</text>
-  </g>
-
-  <!-- Online sub-branches -->
-  <!-- 1. Instagram Dr. Ivan -->
-  <path d="M225 192 L225 248" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('instagram')">
-    <rect x="110" y="248" width="230" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="225" y="266" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Instagram Dr. Ivan</text>
-    <text x="225" y="284" text-anchor="middle" font-size="11" fill="#534AB7">3 reels + 2 feeds/sem + stories</text>
-  </g>
-
-  <!-- Instagram sub -->
-  <path d="M152 300 L100 346" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('bastidores')">
-    <rect x="20" y="346" width="148" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="94" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Bastidores</text>
-    <text x="94" y="380" text-anchor="middle" font-size="11" fill="#534AB7">espontâneo, sem roteiro</text>
-  </g>
-
-  <path d="M298 300 L348 346" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('pautas')">
-    <rect x="270" y="346" width="148" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="344" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Pautas abertas</text>
-    <text x="344" y="380" text-anchor="middle" font-size="11" fill="#534AB7">longevidade, autoridade</text>
-  </g>
-
-  <!-- 2. Tráfego Pago -->
-  <path d="M160 192 L100 430" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('trafego')">
-    <rect x="10" y="430" width="188" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="104" y="448" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Tráfego pago</text>
-    <text x="104" y="466" text-anchor="middle" font-size="11" fill="#534AB7">Meta R$20K + Google R$10K</text>
-  </g>
-
-  <path d="M56 482 L30 528" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('meta')">
-    <rect x="0" y="528" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="63" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Meta Ads</text>
-    <text x="63" y="562" text-anchor="middle" font-size="11" fill="#534AB7">Dr. Ivan + Human</text>
-  </g>
-
-  <path d="M152 482 L178 528" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('google')">
-    <rect x="136" y="528" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="199" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">Google Ads</text>
-    <text x="199" y="562" text-anchor="middle" font-size="11" fill="#534AB7">busca ativa · nome</text>
-  </g>
-
-  <!-- 3. Landing Pages -->
-  <path d="M225 192 Q180 580 160 600" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('lps')">
-    <rect x="30" y="600" width="188" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="124" y="618" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Landing pages</text>
-    <text x="124" y="636" text-anchor="middle" font-size="11" fill="#534AB7">LP Dr. Ivan + LP Human</text>
-  </g>
-
-  <path d="M80 652 L56 696" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('lp-ivan')">
-    <rect x="0" y="696" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="63" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">LP Dr. Ivan</text>
-    <text x="63" y="730" text-anchor="middle" font-size="11" fill="#534AB7">alta conversão</text>
-  </g>
-
-  <path d="M168 652 L192 696" fill="none" stroke="#AFA9EC" stroke-width="0.8" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('crm')">
-    <rect x="154" y="696" width="126" height="44" rx="6" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="0.5"/>
-    <text x="217" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#3C3489">CRM Fale Up</text>
-    <text x="217" y="730" text-anchor="middle" font-size="11" fill="#534AB7">LP → WA → CRM</text>
-  </g>
-
-  <!-- 4. Remarketing -->
-  <path d="M225 192 Q140 750 130 770" fill="none" stroke="#534AB7" stroke-width="1" marker-end="url(#arr-purple)"/>
-  <g class="node" onclick="showPanel('remarketing')">
-    <rect x="20" y="770" width="210" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="125" y="788" text-anchor="middle" font-size="13" font-weight="600" fill="#3C3489">Remarketing</text>
-    <text x="125" y="806" text-anchor="middle" font-size="11" fill="#534AB7">visitantes LP + engaj. Instagram</text>
-  </g>
-
-  <!-- ====== BRANCH RIGHT: MÍDIA OFFLINE ====== -->
-  <path d="M754 82 Q900 82 960 140" fill="none" stroke="#D85A30" stroke-width="2" marker-end="url(#arr-coral)"/>
-
-  <g class="node" onclick="showPanel('offline')">
-    <rect x="870" y="140" width="210" height="52" rx="10" fill="#FAECE7" stroke="#D85A30" stroke-width="1.5"/>
-    <text x="975" y="158" text-anchor="middle" font-size="14" font-weight="600" fill="#712B13">Mídia offline</text>
-    <text x="975" y="176" text-anchor="middle" font-size="11" fill="#993C1D">presença, parceria e evento</text>
-  </g>
-
-  <!-- 1. Parcerias e influencers -->
-  <path d="M975 192 L975 248" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('parcerias')">
-    <rect x="852" y="248" width="246" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
-    <text x="975" y="266" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Parcerias e influencers</text>
-    <text x="975" y="284" text-anchor="middle" font-size="11" fill="#993C1D">500+ parceiros · permuta · colabs</text>
-  </g>
-
-  <path d="M916 300 L866 346" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('celebridade')">
-    <rect x="782" y="346" width="152" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="858" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Celebridade</text>
-    <text x="858" y="380" text-anchor="middle" font-size="11" fill="#993C1D">Dia das Mães · vídeo</text>
-  </g>
-
-  <path d="M1034 300 L1082 346" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('indicacao')">
-    <rect x="1000" y="346" width="152" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="1076" y="364" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Indicação</text>
-    <text x="1076" y="380" text-anchor="middle" font-size="11" fill="#993C1D">base ativa · 89% recorrência</text>
-  </g>
-
-  <!-- 2. Eventos e presença -->
-  <path d="M1040 192 L1090 430" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('eventos')">
-    <rect x="1002" y="430" width="188" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
-    <text x="1096" y="448" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Eventos e presença</text>
-    <text x="1096" y="466" text-anchor="middle" font-size="11" fill="#993C1D">premium · experiência</text>
-  </g>
-
-  <path d="M1044 482 L1018 528" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('eventos-clinica')">
-    <rect x="948" y="528" width="140" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="1018" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Na clínica</text>
-    <text x="1018" y="562" text-anchor="middle" font-size="11" fill="#993C1D">talks, workshops</text>
-  </g>
-
-  <path d="M1148 482 L1162 528" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('feiras')">
-    <rect x="1074" y="528" width="126" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="1137" y="546" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Feiras premium</text>
-    <text x="1137" y="562" text-anchor="middle" font-size="11" fill="#993C1D">wellness, beleza</text>
-  </g>
-
-  <!-- 3. PR e imprensa -->
-  <path d="M975 192 Q1030 580 1020 600" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('pr')">
-    <rect x="940" y="600" width="188" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
-    <text x="1034" y="618" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">PR e imprensa</text>
-    <text x="1034" y="636" text-anchor="middle" font-size="11" fill="#993C1D">matérias · podcast · TV</text>
-  </g>
-
-  <path d="M978 652 L952 696" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('midia-espec')">
-    <rect x="882" y="696" width="140" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="952" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Mídia especializada</text>
-    <text x="952" y="730" text-anchor="middle" font-size="11" fill="#993C1D">Vogue, Caras, portais</text>
-  </g>
-
-  <path d="M1090 652 L1114 696" fill="none" stroke="#F0997B" stroke-width="0.8" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('podcasts')">
-    <rect x="1074" y="696" width="122" height="44" rx="6" fill="#FAECE7" stroke="#F0997B" stroke-width="0.5"/>
-    <text x="1135" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#712B13">Podcasts</text>
-    <text x="1135" y="730" text-anchor="middle" font-size="11" fill="#993C1D">saúde, longevidade</text>
-  </g>
-
-  <!-- 4. Social selling -->
-  <path d="M975 192 Q1060 750 1042 770" fill="none" stroke="#D85A30" stroke-width="1" marker-end="url(#arr-coral)"/>
-  <g class="node" onclick="showPanel('social-selling')">
-    <rect x="910" y="770" width="230" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
-    <text x="1025" y="788" text-anchor="middle" font-size="13" font-weight="600" fill="#712B13">Social selling + CRM</text>
-    <text x="1025" y="806" text-anchor="middle" font-size="11" fill="#993C1D">busca ativa · base dormindo</text>
-  </g>
-
-  <!-- ====== CENTER COLUMN: OPERAÇÃO ====== -->
-  <!-- Integracao on+off -->
-  <path d="M330 300 Q490 400 490 420" fill="none" stroke="#888780" stroke-width="0.8" stroke-dasharray="5 3"/>
-  <path d="M870 300 Q710 400 710 420" fill="none" stroke="#888780" stroke-width="0.8" stroke-dasharray="5 3"/>
-
-  <g class="node" onclick="showPanel('integracao')">
-    <rect x="452" y="420" width="296" height="52" rx="10" fill="#F1EFE8" stroke="#888780" stroke-width="1"/>
-    <text x="600" y="438" text-anchor="middle" font-size="14" font-weight="600" fill="#2C2C2A">Integração on + off</text>
-    <text x="600" y="456" text-anchor="middle" font-size="11" fill="#5F5E5A">experiência coerente online e presencial</text>
-  </g>
-
-  <path d="M600 472 L600 524" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
-  <g class="node" onclick="showPanel('time')">
-    <rect x="452" y="524" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
-    <text x="600" y="542" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Time local SP</text>
-    <text x="600" y="560" text-anchor="middle" font-size="11" fill="#5F5E5A">Social Media + Videomaker — urgente</text>
-  </g>
-
-  <path d="M600 576 L600 626" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
-  <g class="node" onclick="showPanel('calendario')">
-    <rect x="452" y="626" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
-    <text x="600" y="644" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Calendário editorial</text>
-    <text x="600" y="662" text-anchor="middle" font-size="11" fill="#5F5E5A">mensal · datas · campanhas</text>
-  </g>
-
-  <path d="M600 678 L600 726" fill="none" stroke="#888780" stroke-width="0.8" marker-end="url(#arr-gray)"/>
-  <g class="node" onclick="showPanel('relatorios')">
-    <rect x="452" y="726" width="296" height="52" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.8"/>
-    <text x="600" y="744" text-anchor="middle" font-size="13" font-weight="600" fill="#2C2C2A">Relatórios semanais</text>
-    <text x="600" y="762" text-anchor="middle" font-size="11" fill="#5F5E5A">leads · CPL · ROAS · conversão</text>
-  </g>
-
-  <!-- ====== RESULTADOS (bottom) ====== -->
-  <path d="M600 778 L600 836" fill="none" stroke="#1D9E75" stroke-width="2" marker-end="url(#arr-teal)"/>
-
-  <g class="node" onclick="showPanel('resultados')">
-    <rect x="400" y="836" width="400" height="56" rx="12" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
-    <text x="600" y="856" text-anchor="middle" font-size="15" font-weight="600" fill="#085041">Resultados esperados</text>
-    <text x="600" y="876" text-anchor="middle" font-size="12" fill="#0F6E56">R$4,6M → R$7M/mês · 200–350 leads/mês</text>
-  </g>
-
-  <!-- resultado sub -->
-  <path d="M462 892 L340 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
-  <g class="node" onclick="showPanel('meta-fat')">
-    <rect x="240" y="940" width="200" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
-    <text x="340" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Meta faturamento</text>
-    <text x="340" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">R$7M/mês · 6–12 meses</text>
-  </g>
-
-  <path d="M540 892 L520 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
-  <g class="node" onclick="showPanel('qualidade-leads')">
-    <rect x="430" y="940" width="180" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
-    <text x="520" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Qualidade leads</text>
-    <text x="520" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">público AAA · CPL R$100–200</text>
-  </g>
-
-  <path d="M660 892 L680 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
-  <g class="node" onclick="showPanel('autoridade')">
-    <rect x="590" y="940" width="180" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
-    <text x="680" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Autoridade Dr. Ivan</text>
-    <text x="680" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">referência nacional</text>
-  </g>
-
-  <path d="M738 892 L860 940" fill="none" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr-teal)"/>
-  <g class="node" onclick="showPanel('recorrencia')">
-    <rect x="760" y="940" width="200" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
-    <text x="860" y="958" text-anchor="middle" font-size="13" font-weight="600" fill="#085041">Recorrência</text>
-    <text x="860" y="976" text-anchor="middle" font-size="11" fill="#0F6E56">manter 89% · upsell base</text>
-  </g>
-
-  <!-- ====== FOOTER NOTE ====== -->
-  <text x="600" y="1046" text-anchor="middle" font-size="12" fill="#B4B2A9">Clique em qualquer nó para ver detalhes</text>
-
-</svg>
+<div class="insight animate">
+  <div class="insight-icon"></div>
+  <p>O offline é a única frente onde o Dr. Ivan deixa de ser um anúncio e se torna uma <strong>presença real</strong>. Pacientes que chegam por evento ou indicação fecham mais rápido porque a confiança já foi construída antes do primeiro contato.</p>
 </div>
 
-<!-- Tooltip -->
-<div id="tooltip"></div>
+<!-- EVENTOS AAA -->
+<section class="section" id="eventos">
+  <div class="section-header animate">
+    <div class="section-number">01</div>
+    <div class="section-meta">
+      <div class="section-category">Frente 1 — Eventos externos 2026</div>
+      <h2 class="section-title">Eventos AAA externos</h2>
+      <p class="section-desc">Presença nos maiores eventos do universo premium de SP. Estratégia: relacionamento e autoridade — não exposição. Em 2026, o SPFW tem apenas uma edição (outubro). Lollapalooza e Hipismo listados como referência para 2027. Clique em cada evento para ver os detalhes.</p>
+    </div>
+  </div>
 
-<!-- Detail panel -->
-<div id="panel">
-  <button id="panel-close" onclick="closePanel()">×</button>
-  <span id="panel-tag"></span>
-  <div id="panel-title"></div>
-  <div id="panel-body"></div>
-  <ul id="panel-items"></ul>
-</div>
+  <div class="events-grid animate delay-1">
+
+    <!-- PORSCHE CUP -->
+    <div class="event-row" onclick="toggle(this)">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">Porsche Cup Brasil</div>
+          <div class="event-date">Etapas em SP: 28/02–01/03 · 28–29/03 (Velocitta) · 05–06/09 · 07–08/11 — Interlagos</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads / etapa</div>
+          <div class="event-stat-v good">5–10</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$0–30K</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">40–55%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$137–302K</div>
+        </div>
+        <div><span class="event-badge badge-priority">Já presentes</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Por que Porsche Cup é estratégico</div>
+            <ul class="detail-items">
+              <li>A Human já circula nesse ambiente — relação prévia facilita conversão</li>
+              <li>Público exclusivo: pilotos, patrocinadores e convidados de alto poder aquisitivo</li>
+              <li>Taxa de fechamento mais alta que outros eventos pela familiaridade já existente</li>
+              <li>Ambiente de clube — contexto propício para conversa e construção de relação</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Como potencializar a presença</div>
+            <ul class="detail-items">
+              <li>Estruturar a presença atual de forma estratégica — não apenas aparecer</li>
+              <li>Cadastro qualificado de novos contatos a cada etapa</li>
+              <li>Follow-up personalizado em 24–48h com convite para Manhã de Longevidade</li>
+              <li>Conteúdo com o Dr. Ivan no ambiente para o Instagram</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Números</div>
+            <ul class="detail-items">
+              <li>5–10 leads qualificados por etapa</li>
+              <li>Taxa de fechamento 40–55% (acima da média por relação prévia)</li>
+              <li>Custo baixo — presença já estabelecida, apenas formalizar estratégia</li>
+              <li>Datas SP: 28/02–01/03 · 28–29/03 · 05–06/09 · 07–08/11 (junto com F1)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">O Porsche Cup é o evento com maior potencial imediato justamente porque a Human já está presente. Transformar essa presença informal em estratégia estruturada — com cadastro, follow-up e convite — pode gerar resultado rápido sem custo adicional relevante.</div>
+      </div>
+    </div>
+
+    <!-- SPFW OUTONO/INVERNO -->
+    <div class="event-row" onclick="toggle(this)">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">São Paulo Fashion Week N61</div>
+          <div class="event-date">Outubro 2026 — edição única em 2026 · backstage de pele</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads / edição</div>
+          <div class="event-stat-v good">4–8</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$0–50K</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">25–40%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$55–220K</div>
+        </div>
+        <div><span class="event-badge badge-priority">Prioritário</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Estratégia de entrada</div>
+            <ul class="detail-items">
+              <li>Backstage de pele — protocolo de preparação para modelos e convidadas</li>
+              <li>Custo próximo a zero: apenas equipe e insumos</li>
+              <li>Parceria com marcas de moda já presentes no evento</li>
+              <li>Curadoria de contatos com perfil da Human entre os presentes</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">O que fazer no evento</div>
+            <ul class="detail-items">
+              <li>Cadastro qualificado: nome + Instagram + interesse</li>
+              <li>Stories espontâneos com o Dr. Ivan circulando no ambiente</li>
+              <li>Convite elegante para avaliação exclusiva na clínica</li>
+              <li>Follow-up personalizado em 24–48h referenciando conversa real</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Por que a taxa é 25–40%</div>
+            <ul class="detail-items">
+              <li>Modelos e equipe de bastidores não são o público da Human</li>
+              <li>O valor está nas influencers e convidadas presentes</li>
+              <li>Ambiente festivo — decisão acontece no follow-up</li>
+              <li>Custo de entrada próximo a zero compensa taxa menor</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">Autoridade estética + conteúdo premium + conexão com influencers. O SPFW posiciona o Dr. Ivan no mesmo universo do público-alvo da Human.</div>
+      </div>
+    </div>
+
+    <!-- MOSTRA CINEMA -->
+    <div class="event-row" onclick="toggle(this)">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">Mostra Internacional de Cinema SP</div>
+          <div class="event-date">15 – 29 de outubro 2026 — 50ª edição</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads / evento</div>
+          <div class="event-stat-v good">3–6</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$20–60K</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">25–40%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$41–165K</div>
+        </div>
+        <div><span class="event-badge badge-culture">Autoridade cultural</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Perfil do público</div>
+            <ul class="detail-items">
+              <li>Formadores de opinião do universo cultura, moda e beleza</li>
+              <li>Influenciadores de nicho mais sofisticado</li>
+              <li>Jornalistas, editores e personalidades culturais de SP</li>
+              <li>Porta de entrada para relações com assessorias de imprensa</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Oportunidade</div>
+            <ul class="detail-items">
+              <li>Posiciona Dr. Ivan como referência além da medicina estética</li>
+              <li>Networking com assessorias para PR futuro</li>
+              <li>Conteúdo editorial premium para o Instagram</li>
+              <li>Combinação possível com SPFW outubro na mesma semana</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Como entrar</div>
+            <ul class="detail-items">
+              <li>Parceria com produtora ou assessoria do evento</li>
+              <li>Patrocínio de categoria alinhado ao universo da Human</li>
+              <li>Experiência de cuidado nas sessões VIP ou coletivas de imprensa</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">Menor volume de leads, maior valor por lead. Contatos feitos na Mostra têm perfil sofisticado e podem se desdobrar em PR, matérias e parcerias de longo prazo.</div>
+      </div>
+    </div>
+
+
+    <!-- F1 -->
+    <div class="event-row" onclick="toggle(this)">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">Grande Prêmio SP — Fórmula 1</div>
+          <div class="event-date">6, 7 e 8 de novembro 2026 — Autódromo de Interlagos</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads / evento</div>
+          <div class="event-stat-v good">4–8</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$10–30K*</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">25–40%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$55–220K</div>
+        </div>
+        <div><span class="event-badge badge-partner">Via parceria</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Como entrar sem pagar cota cheia</div>
+            <ul class="detail-items">
+              <li>Cota oficial de camarote: R$150K–500K — não recomendado</li>
+              <li>Parceria com marca já com cota: oferecer experiência de cuidado VIP</li>
+              <li>Custo real da operação: R$10–30K (equipe + kit)</li>
+              <li>Entrar como convidado especial, não como expositor</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Estratégia de presença</div>
+            <ul class="detail-items">
+              <li>Dr. Ivan circulando como personalidade — não vendendo</li>
+              <li>Stories espontâneos no ambiente premium</li>
+              <li>Cadastro qualificado de contatos com interesse genuíno</li>
+              <li>Follow-up pós-evento com convite para Manhã de Longevidade</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Expectativa realista</div>
+            <ul class="detail-items">
+              <li>Ambiente festivo — não é contexto de decisão de compra</li>
+              <li>Retorno financeiro de médio prazo via follow-up</li>
+              <li>Valor principal: posicionamento e reconhecimento de marca</li>
+              <li>Conteúdo gerado vira material premium para o Instagram</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">*Custo via parceria, não cota oficial. O maior evento de networking do ano em SP. A estratégia não é vender no evento — é ser reconhecido como parte desse universo.</div>
+      </div>
+    </div>
+
+    <!-- LOLLA 2027 -->
+    <div class="event-row" onclick="toggle(this)" style="opacity:.7">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">Lollapalooza Brasil — área VIP</div>
+          <div class="event-date">Sugestão para 2027 · março</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads estimados</div>
+          <div class="event-stat-v good">2–5</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$20–50K</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">20–35%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$22–82K</div>
+        </div>
+        <div><span class="event-badge" style="background:#E8E6F0;color:#4A3A6B">2027</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Por que 2027</div>
+            <ul class="detail-items">
+              <li>Edição de 2026 (março) já passou — planejamento para o próximo ano</li>
+              <li>Menor prioridade no portfólio — público mais jovem e disperso</li>
+              <li>Só participar via parceria, sem custo expressivo próprio</li>
+              <li>Valor principal: imagem e conteúdo, não geração direta de pacientes</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Quando faz sentido</div>
+            <ul class="detail-items">
+              <li>Exclusivamente via área VIP ou camarote de marca parceira</li>
+              <li>Foco em influencers de lifestyle e beleza no ambiente</li>
+              <li>Conteúdo em vídeo com o Dr. Ivan no ambiente premium</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Planejamento antecipado</div>
+            <ul class="detail-items">
+              <li>Mapear marcas parceiras com cotas em 2026 para negociar 2027</li>
+              <li>Confirmar presença até outubro/novembro de 2026</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">Sugestão de planejamento para 2027. A edição de 2026 já ocorreu em março. Começar a mapear parcerias para garantir entrada sem custo próprio na próxima edição.</div>
+      </div>
+    </div>
+
+    <!-- HIPISMO 2027 -->
+    <div class="event-row" onclick="toggle(this)" style="opacity:.7">
+      <div class="event-summary">
+        <div class="event-info">
+          <div class="event-name">Hipismo premium SP — temporada</div>
+          <div class="event-date">Sugestão para 2027 · maio–julho</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Leads / evento</div>
+          <div class="event-stat-v good">4–8</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Investimento</div>
+          <div class="event-stat-v cost">R$30–80K</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Taxa fechamento</div>
+          <div class="event-stat-v neutral">35–50%</div>
+        </div>
+        <div class="event-stat">
+          <div class="event-stat-l">Receita potencial</div>
+          <div class="event-stat-v good">R$165–660K</div>
+        </div>
+        <div><span class="event-badge" style="background:#E8E6F0;color:#4A3A6B">2027</span></div>
+      </div>
+      <div class="event-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-box-title">Por que 2027</div>
+            <ul class="detail-items">
+              <li>Temporada de 2026 (maio–julho) já passou — planejamento para 2027</li>
+              <li>Alto ROI: público mais rico de SP, baixíssima concorrência</li>
+              <li>Ambiente de clube — tempo e contexto para construir conexão real</li>
+              <li>Melhor custo-benefício de eventos externos no calendário</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Como preparar em 2026</div>
+            <ul class="detail-items">
+              <li>Mapear os principais clubes equestres de SP ainda em 2026</li>
+              <li>Iniciar relacionamento com organizadores da temporada</li>
+              <li>Identificar parceiros que já estão presentes para entrada conjunta</li>
+            </ul>
+          </div>
+          <div class="detail-box">
+            <div class="detail-box-title">Números para 2027</div>
+            <ul class="detail-items">
+              <li>2–3 eventos na temporada</li>
+              <li>Taxa de fechamento 35–50% — ambiente menos festivo</li>
+              <li>Receita total na temporada: R$165–660K estimados</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-desc">O evento com melhor custo-benefício do portfólio externo. A temporada 2026 já passou, mas o planejamento e as relações para 2027 devem começar agora — ainda em 2026.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCIAS PROPRIAS -->
+<section class="section" id="experiencias" style="background:var(--warm-white)">
+  <div class="section-header animate">
+    <div class="section-number">02</div>
+    <div class="section-meta">
+      <div class="section-category">Frente 2</div>
+      <h2 class="section-title">Experiências próprias</h2>
+      <p class="section-desc">A Human como anfitriã. Maior taxa de conversão do portfólio porque o ambiente é 100% controlado. Cada experiência usa o modelo de <strong>indicação indireta</strong>: cada influenciador ou parceiro traz 3 indicados — sem parecer programa de indicação, sem pressão comercial.</p>
+    </div>
+  </div>
+
+  <div class="exp-grid animate delay-1">
+
+    <div class="exp-card hero-card">
+      <div>
+        <div class="exp-card-tag">Maior ROI · Mensal</div>
+        <div class="exp-card-name">Manhã de Longevidade Human</div>
+        <div class="exp-card-freq">6–8 convidadas · cada influencer/parceiro leva 3 indicados</div>
+      </div>
+      <div class="exp-stats">
+        <div class="exp-stat"><div class="exp-stat-l">Leads/edição</div><div class="exp-stat-v g">3–5</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Fechamento</div><div class="exp-stat-v g">45–55%</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Investimento</div><div class="exp-stat-v r">R$8–20K</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Receita/edição</div><div class="exp-stat-v g">R$82–165K</div></div>
+      </div>
+      <hr class="exp-divider">
+      <div style="background:var(--cream);border-radius:4px;padding:10px 12px;margin-bottom:10px">
+        <div class="exp-card-freq" style="margin-bottom:5px;font-weight:500">Modelo de indicação indireta</div>
+        <div class="exp-desc" style="margin:0">Cada influenciador ou parceiro da clínica recebe o convite e leva 3 pessoas do seu círculo. Não existe programa formal de indicação — o convite chega como algo exclusivo e desejável, não como obrigação. O resultado: sala preenchida com leads qualificados sem nenhum custo de captação adicional.</div>
+      </div>
+      <div>
+        <div class="exp-card-freq" style="margin-bottom:6px">Funil por edição</div>
+        <div style="display:flex;gap:3px;margin-bottom:6px">
+          <div style="flex:8;height:5px;border-radius:3px;background:#FAECE7"></div>
+          <div style="flex:6;height:5px;border-radius:3px;background:#F0997B"></div>
+          <div style="flex:4;height:5px;border-radius:3px;background:#D85A30"></div>
+          <div style="flex:2.5;height:5px;border-radius:3px;background:#993C1D"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mid)">
+          <span>8 convid.</span><span>6 engaj.</span><span>4 avaliam</span><span>2–3 fecham</span>
+        </div>
+      </div>
+      <div class="exp-desc">Recepção premium + yoga exclusivo + fala do Dr. Ivan sobre longevidade + convite individual para jornada personalizada.</div>
+    </div>
+
+    <div class="exp-card">
+      <div>
+        <div class="exp-card-tag">Indicação · Bimestral</div>
+        <div class="exp-card-name">Jantar privado de relacionamento</div>
+        <div class="exp-card-freq">8–10 convidadas · parceiros levam 3 indicados cada</div>
+      </div>
+      <div class="exp-stats">
+        <div class="exp-stat"><div class="exp-stat-l">Leads diretos</div><div class="exp-stat-v g">2–4</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Fechamento</div><div class="exp-stat-v g">40–55%</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Indicações geradas</div><div class="exp-stat-v g">3–6</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Investimento</div><div class="exp-stat-v r">R$15–40K</div></div>
+      </div>
+      <hr class="exp-divider">
+      <div class="exp-desc">O jantar fecha pouco diretamente — mas é a maior semente de indicação do portfólio. O modelo indireta amplifica: cada parceiro presente leva 3 indicados, sem agenda comercial aparente. As indicações geradas fecham com taxa de 55–70% porque chegam com prova social já construída.</div>
+    </div>
+
+    <div class="exp-card">
+      <div>
+        <div class="exp-card-tag">Autoridade · Trimestral</div>
+        <div class="exp-card-name">Talk de longevidade</div>
+        <div class="exp-card-freq">15–20 participantes · palestra + Q&A</div>
+      </div>
+      <div class="exp-stats">
+        <div class="exp-stat"><div class="exp-stat-l">Leads/edição</div><div class="exp-stat-v g">5–10</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Fechamento</div><div class="exp-stat-v g">35–50%</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Investimento</div><div class="exp-stat-v r">R$10–25K</div></div>
+        <div class="exp-stat"><div class="exp-stat-l">Receita/edição</div><div class="exp-stat-v g">R$96–275K</div></div>
+      </div>
+      <hr class="exp-divider">
+      <div class="exp-desc">Influencers e parceiros convidam 3 pessoas do seu círculo cada — a sala se preenche com leads qualificados sem custo de captação. O talk transforma conhecimento em desejo: cada participante sai querendo agendar. O conteúdo gravado vira semanas de material premium para o Instagram.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FUNIL SEPARADO: HUMAN E IVAN -->
+<section class="funnel-section" id="funil">
+  <div class="section-header animate" style="border-bottom:.5px solid rgba(255,255,255,.08);padding-bottom:40px;margin-bottom:0">
+    <div class="section-number">03</div>
+    <div class="section-meta">
+      <div class="section-category">Consolidado</div>
+      <h2 class="section-title">Funil offline — Human Clinic e Dr. Ivan</h2>
+      <p class="section-desc">Funis separados porque o paciente da Human e o paciente do Dr. Ivan têm perfis, tickets e ciclos de decisão distintos.</p>
+    </div>
+  </div>
+
+  <!-- FUNIL DR. IVAN -->
+  <div style="margin-top:40px;padding-bottom:40px;border-bottom:.5px solid rgba(255,255,255,.08)">
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:24px">Funil Dr. Ivan — ticket R$50–60K</div>
+    <div class="funnel-visual">
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(184,150,90,.15);height:180px">
+            <div class="funnel-n">~180</div>
+            <div class="funnel-unit">contatos/ano</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Eventos AAA + experiências</div>
+        <div class="funnel-step-sub">todos os canais</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(184,150,90,.22);height:140px">
+            <div class="funnel-n">~72</div>
+            <div class="funnel-unit">leads qualificados</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Perfil AAA confirmado</div>
+        <div class="funnel-step-sub">~40% dos contatos</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(184,150,90,.32);height:104px">
+            <div class="funnel-n">~43</div>
+            <div class="funnel-unit">agendamentos</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Aceitaram avaliação</div>
+        <div class="funnel-step-sub">~60% dos leads</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(184,150,90,.46);height:72px">
+            <div class="funnel-n">~24</div>
+            <div class="funnel-unit">consultas</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Compareceram</div>
+        <div class="funnel-step-sub">~55% dos agendados</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:#B8965A;height:48px">
+            <div class="funnel-n" style="color:var(--dark)">~11</div>
+            <div class="funnel-unit" style="color:rgba(0,0,0,.6)">fechados/ano</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Fecharam protocolo</div>
+        <div class="funnel-step-sub">~45% das consultas</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Conservador</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#7BCCA0">R$605K/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">~11 pacientes · R$55K ticket</div>
+      </div>
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Realista</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#B8965A">R$1,2–2,2M/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">22–40 pacientes</div>
+      </div>
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Otimista</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold-light)">R$4,1M/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">~75 pacientes · teto das faixas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUNIL HUMAN CLINIC -->
+  <div style="margin-top:40px">
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7BCCA0;margin-bottom:24px">Funil Human Clinic — ticket R$10–15K</div>
+    <div class="funnel-visual">
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(123,204,160,.12);height:180px">
+            <div class="funnel-n" style="color:#7BCCA0">~220</div>
+            <div class="funnel-unit">contatos/ano</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Eventos + experiências + indicação</div>
+        <div class="funnel-step-sub">todos os canais</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(123,204,160,.22);height:148px">
+            <div class="funnel-n" style="color:#7BCCA0">~88</div>
+            <div class="funnel-unit">leads qualificados</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Perfil compatível com a clínica</div>
+        <div class="funnel-step-sub">~40% dos contatos</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(123,204,160,.34);height:110px">
+            <div class="funnel-n" style="color:#7BCCA0">~57</div>
+            <div class="funnel-unit">agendamentos</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Aceitaram avaliação</div>
+        <div class="funnel-step-sub">~65% dos leads</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:rgba(123,204,160,.5);height:78px">
+            <div class="funnel-n" style="color:#7BCCA0">~34</div>
+            <div class="funnel-unit">consultas</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Compareceram</div>
+        <div class="funnel-step-sub">~60% dos agendados</div>
+      </div>
+      <div class="funnel-step">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-bar" style="background:#2A5C45;height:52px">
+            <div class="funnel-n" style="color:#EAF2EC">~19</div>
+            <div class="funnel-unit" style="color:rgba(234,242,236,.7)">fechados/ano</div>
+          </div>
+        </div>
+        <div class="funnel-step-label">Fecharam protocolo</div>
+        <div class="funnel-step-sub">~55% das consultas</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Conservador</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#7BCCA0">R$228K/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">~19 pacientes · R$12K ticket</div>
+      </div>
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Realista</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#7BCCA0">R$480K–960K/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">40–80 pacientes</div>
+      </div>
+      <div style="padding:18px 24px;background:rgba(255,255,255,.03)">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">Otimista</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#7BCCA0">R$1,8M/ano</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:3px">~150 pacientes · teto das faixas</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ROI TABLE -->
+<section class="section roi-section" id="roi">
+  <div class="section-header animate">
+    <div class="section-number">04</div>
+    <div class="section-meta">
+      <div class="section-category">Financeiro</div>
+      <h2 class="section-title">Retorno por frente</h2>
+      <p class="section-desc">Ordenado por data de execução em 2026. Lollapalooza e Hipismo listados como referência para 2027.</p>
+    </div>
+  </div>
+
+  <div class="animate delay-1">
+  <table class="roi-table">
+    <thead>
+      <tr>
+        <th>Frente</th>
+        <th>Período</th>
+        <th>Investimento</th>
+        <th>Leads / ano</th>
+        <th>Taxa fech.</th>
+        <th>Receita est.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="roi-frente">Manhã de Longevidade Human</div>
+          <div class="roi-sub">Mensal recorrente · indicação indireta via parceiros (3 indicados cada)</div>
+        </td>
+        <td style="color:var(--mid)">Jan–Dez 2026</td>
+        <td class="val-cost">R$96–240K</td>
+        <td>36–60</td>
+        <td>45–55%</td>
+        <td class="val-good">R$880K–1,8M</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="roi-frente">Indicação estruturada</div>
+          <div class="roi-sub">Contínuo · maior taxa de fechamento · CAC zero</div>
+        </td>
+        <td style="color:var(--mid)">Contínuo</td>
+        <td class="val-good">R$0</td>
+        <td>36–96</td>
+        <td>55–70%</td>
+        <td class="val-good">R$1,1–3,7M</td>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="roi-frente">Jantar privado de relacionamento</div>
+          <div class="roi-sub">Bimestral · parceiros levam 3 indicados cada</div>
+        </td>
+        <td style="color:var(--mid)">Bimestral 2026</td>
+        <td class="val-cost">R$90–240K</td>
+        <td>12–24</td>
+        <td>40–55%</td>
+        <td class="val-good">R$275–715K</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="roi-frente">Porsche Cup Brasil</div>
+          <div class="roi-sub">Presença já existente · estruturar estratégia formal</div>
+        </td>
+        <td style="color:var(--mid)">Etapas 2026</td>
+        <td class="val-cost">R$0–30K</td>
+        <td>15–30</td>
+        <td>40–55%</td>
+        <td class="val-good">R$412–990K</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="roi-frente">Talk de longevidade</div>
+          <div class="roi-sub">Trimestral · parceiros levam 3 indicados · conteúdo premium</div>
+        </td>
+        <td style="color:var(--mid)">Trimestral 2026</td>
+        <td class="val-cost">R$40–100K</td>
+        <td>20–40</td>
+        <td>35–50%</td>
+        <td class="val-good">R$385K–1,1M</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="roi-frente">SPFW N61 + Mostra Internacional Cinema SP</div>
+          <div class="roi-sub">Outubro 2026 (edição única SPFW) + Mostra Cinema 15–29/out · backstage + networking</div>
+        </td>
+        <td style="color:var(--mid)">Out 2026</td>
+        <td class="val-cost">R$20–110K</td>
+        <td>7–14</td>
+        <td>25–40%</td>
+        <td class="val-good">R$96–385K</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="roi-frente">Grande Prêmio SP — Fórmula 1</div>
+          <div class="roi-sub">Via camarote parceiro · posicionamento + networking</div>
+        </td>
+        <td style="color:var(--mid)">6–8/nov/2026</td>
+        <td class="val-cost">R$10–30K</td>
+        <td>4–8</td>
+        <td>25–40%</td>
+        <td class="val-good">R$55–220K</td>
+      </tr>
+      <tr style="opacity:.6">
+        <td>
+          <div class="roi-frente">Lollapalooza VIP</div>
+          <div class="roi-sub">Sugestão para 2027 · via parceria</div>
+        </td>
+        <td style="color:var(--mid)">Mar 2027</td>
+        <td class="val-cost">R$20–50K</td>
+        <td>2–5</td>
+        <td>20–35%</td>
+        <td class="val-good">R$22–82K</td>
+      </tr>
+      <tr style="opacity:.6">
+        <td>
+          <div class="roi-frente">Hipismo premium SP</div>
+          <div class="roi-sub">Sugestão para 2027 · temporada mai–jul</div>
+        </td>
+        <td style="color:var(--mid)">Mai–Jul 2027</td>
+        <td class="val-cost">R$60–240K</td>
+        <td>8–24</td>
+        <td>35–50%</td>
+        <td class="val-good">R$165–660K</td>
+      </tr>
+      <tr class="roi-total">
+        <td><div class="roi-frente" style="color:#fff;font-size:15px">Total offline 2026</div></td>
+        <td style="color:rgba(255,255,255,.5)">Jan–Dez</td>
+        <td class="val-cost">R$180–400K</td>
+        <td style="color:rgba(255,255,255,.6)">134–280</td>
+        <td style="color:rgba(255,255,255,.6)">média ~44%</td>
+        <td class="val-good">R$3,3–8,9M</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div style="margin-top:16px;font-size:12px;color:var(--mid);line-height:1.7;padding:14px 20px;background:var(--cream);border-radius:4px">
+    Premissas: ticket médio Dr. Ivan R$55K · ticket médio Human R$12K · receita calculada separadamente por perfil · leads qualificados = contatos com perfil e intenção demonstrada · linhas em cinza = planejamento 2027.
+  </div>
+</section>
+
+<!-- CALENDÁRIO -->
+<section class="section" id="calendario">
+  <div class="section-header animate">
+    <div class="section-number">05</div>
+    <div class="section-meta">
+      <div class="section-category">Execução</div>
+      <h2 class="section-title">Calendário 2026</h2>
+      <p class="section-desc">Ativações offline, datas comemorativas estratégicas e recorrências mensais — tudo em ordem cronológica.</p>
+    </div>
+  </div>
+
+  <div class="timeline animate delay-1">
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#C8967A"></div>
+      <div class="tl-left"><div class="tl-month">Abr</div><div class="tl-period">27/abr</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Dia das Mães — campanha e experiência</div>
+        <div class="tl-chips">
+          <span class="chip focus">♥ data comemorativa</span>
+          <span class="chip leads">longevidade como presente</span>
+          <span class="chip cost">campanha tráfego concentrada</span>
+        </div>
+        <div class="tl-desc">O maior gatilho emocional do semestre para o público da Human. Campanha com celebridade + mãe conectada ao tema longevidade. Manhã de Longevidade com tema especial Dia das Mães — parceiros levam mãe + filha como indicadas. Tráfego concentrado na semana anterior: R$8–10K pontuais.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#2A5C45"></div>
+      <div class="tl-left"><div class="tl-month">Out</div><div class="tl-period">SPFW N61</div></div>
+      <div class="tl-content">
+        <div class="tl-name">São Paulo Fashion Week — edição outono/inverno</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$0–50K</span>
+          <span class="chip leads">4–8 leads</span>
+          <span class="chip focus">backstage de pele</span>
+        </div>
+        <div class="tl-desc">Primeira edição do SPFW no ano. Entrada via backstage — protocolo de preparação de pele. Autoridade estética + conteúdo + conexão com influencers e celebridades.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#B8965A"></div>
+      <div class="tl-left"><div class="tl-month">Jun</div><div class="tl-period">12/jun</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Dia dos Namorados — ação de relacionamento</div>
+        <div class="tl-chips">
+          <span class="chip focus">♥ data comemorativa</span>
+          <span class="chip leads">presente de casal + longevidade</span>
+        </div>
+        <div class="tl-desc">Oportunidade de experiência para casais — parceiro presenteia com Manhã de Longevidade ou consulta com o Dr. Ivan. Conteúdo de como o cuidado com a longevidade fortalece relações. Campanha orgânica no Instagram, sem custo adicional de mídia.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#3A4A6B"></div>
+      <div class="tl-left"><div class="tl-month">Jul</div><div class="tl-period">Inverno</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Inverno em SP — pele e longevidade</div>
+        <div class="tl-chips">
+          <span class="chip focus">sazonalidade estética</span>
+          <span class="chip leads">melhor época para procedimentos de pele</span>
+        </div>
+        <div class="tl-desc">O inverno é a melhor época do ano para procedimentos de pele e rejuvenescimento — o sol forte de verão não é um limitador. Campanha de conteúdo e tráfego focada nesse gatilho sazonal. Porsche Cup nessa janela amplifica o alcance no público premium.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#C8967A"></div>
+      <div class="tl-left"><div class="tl-month">Ago</div><div class="tl-period">12/ago</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Dia dos Pais — presente de longevidade masculino</div>
+        <div class="tl-chips">
+          <span class="chip focus">♥ data comemorativa</span>
+          <span class="chip leads">abertura para público masculino premium</span>
+        </div>
+        <div class="tl-desc">Oportunidade para alcançar o público masculino AAA — maridos e pais do perfil da cliente da Human. Conteúdo sobre longevidade masculina e presentear o pai com uma avaliação de longevidade. Ação de conteúdo orgânico + tráfego pontual.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#534AB7"></div>
+      <div class="tl-left"><div class="tl-month">Set</div><div class="tl-period">Out/2026</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Talk de longevidade — edição especial primavera</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$10–25K</span>
+          <span class="chip leads">5–10 leads · 35–50% fechamento</span>
+          <span class="chip focus">preparação para o verão</span>
+        </div>
+        <div class="tl-desc">Talk com tema de preparação do corpo para o verão — longevidade e estética com base científica. Parceiros levam 3 indicadas cada. Conteúdo gerado alimenta o Instagram por semanas.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#2A5C45"></div>
+      <div class="tl-left"><div class="tl-month">Out</div><div class="tl-period">15–29/10</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Mostra Internacional de Cinema SP — 50ª edição</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$20–60K</span>
+          <span class="chip leads">3–6 leads</span>
+          <span class="chip focus">15–29/out · networking cultural sofisticado</span>
+        </div>
+        <div class="tl-desc">50ª edição da Mostra de Cinema. Coincide com o SPFW N61 — outubro é o mês mais denso de posicionamento do ano. Networking com formadores de opinião do universo cultura, moda e beleza. Porta de entrada para relações com assessorias de imprensa.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#8B3A2A"></div>
+      <div class="tl-left"><div class="tl-month">Nov</div><div class="tl-period">6–8/nov</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Grande Prêmio SP — Fórmula 1</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$10–30K via parceria</span>
+          <span class="chip leads">4–8 leads</span>
+          <span class="chip focus">maior evento de networking do ano</span>
+        </div>
+        <div class="tl-desc">Via camarote de marca parceira. Maior densidade de público AAA do ano em SP. Retorno financeiro de médio prazo — valor principal é posicionamento e conteúdo.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#C8967A"></div>
+      <div class="tl-left"><div class="tl-month">Dez</div><div class="tl-period">Natal</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Natal — presente de longevidade</div>
+        <div class="tl-chips">
+          <span class="chip focus">♥ data comemorativa</span>
+          <span class="chip leads">maior pico de presentes premium do ano</span>
+          <span class="chip cost">campanha tráfego concentrada</span>
+        </div>
+        <div class="tl-desc">O maior gatilho de presente do ano. Campanha "presenteie quem você ama com longevidade" — gift card para Manhã de Longevidade ou consulta com o Dr. Ivan. Tráfego concentrado na última semana de novembro e primeira de dezembro.</div>
+      </div>
+    </div>
+
+    <!-- RECORRENTES -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#2A5C45"></div>
+      <div class="tl-left"><div class="tl-month">Mensal</div><div class="tl-period">Todo mês</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Manhã de Longevidade Human</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$8–20K / edição</span>
+          <span class="chip leads">3–5 leads · 45–55% fechamento</span>
+          <span class="chip focus">parceiros levam 3 indicados cada</span>
+        </div>
+        <div class="tl-desc">Âncora recorrente de todo o plano offline. 12 edições no ano. Cada influenciador ou parceiro convida 3 pessoas do seu círculo — indicação indireta sem pressão comercial. Recepção premium + yoga + fala do Dr. Ivan + convite individual.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#3A4A6B"></div>
+      <div class="tl-left"><div class="tl-month">Bimestral</div><div class="tl-period">6× / ano</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Jantar privado de relacionamento</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$15–40K / edição</span>
+          <span class="chip leads">3–6 indicações geradas</span>
+          <span class="chip focus">maior semente de indicação</span>
+        </div>
+        <div class="tl-desc">6 jantares ao longo do ano. Parceiros e pacientes atuais levam 3 convidadas cada — sala preenchida sem captação formal. Cada jantar gera 3–6 indicações qualificadas nas semanas seguintes.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#534AB7"></div>
+      <div class="tl-left"><div class="tl-month">Trimestral</div><div class="tl-period">4× / ano</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Talk de longevidade com o Dr. Ivan</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$10–25K / edição</span>
+          <span class="chip leads">5–10 leads · 35–50% fechamento</span>
+          <span class="chip focus">parceiros levam 3 indicados</span>
+        </div>
+        <div class="tl-desc">4 palestras no ano. Parceiros convidam 3 pessoas do círculo deles — sala de 15–20 com leads qualificados. O conteúdo gravado alimenta semanas de Instagram premium.</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="background:#B8965A"></div>
+      <div class="tl-left"><div class="tl-month">Etapas</div><div class="tl-period">2026</div></div>
+      <div class="tl-content">
+        <div class="tl-name">Porsche Cup Brasil — 4 etapas em SP</div>
+        <div class="tl-chips">
+          <span class="chip cost">R$0–30K</span>
+          <span class="chip leads">5–10 leads / etapa · 40–55% fechamento</span>
+          <span class="chip focus">fev · mar · set · nov (junto com F1)</span>
+        </div>
+        <div class="tl-desc">Datas confirmadas em SP: 28/02–01/03 (Interlagos), 28–29/03 (Velocitta), 05–06/09 (Interlagos) e 07–08/11 (Interlagos — etapa final junto com o GP F1). A Human já circula nesse ambiente. Transformar a presença informal em estratégia estruturada: cadastro, follow-up e convite para Manhã de Longevidade.</div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+<footer class="site-footer">
+  <div class="footer-logo">HUMAN CLINIC SP · DR. IVAN ROLLEMBERG</div>
+  <div>Planejamento de mídia offline 2026 · Uso interno</div>
+  <div>Estimativas baseadas em benchmarks de mercado premium · Revisão: Abril 2026</div>
+</footer>
 
 <script>
-const data = {
-  center: {
-    tag: 'Núcleo', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Human Clinic SP · Dr. Ivan Rollemberg',
-    body: 'Faturamento atual: ~R$4,6M/mês. Meta: R$7M/mês. O Dr. Ivan é o maior ativo da clínica — ticket médio de R$50–60K. A estratégia cobre exclusivamente os perfis do Dr. Ivan e da Human Clinic SP.',
-    items: ['Tema unificador: longevidade em toda comunicação', 'Dois perfis integrados: Dr. Ivan + Human institucional', 'Budget de tráfego: R$30K/mês (Meta + Google)', 'Taxa de recorrência atual: 89%']
-  },
-  longevidade: {
-    tag: 'Estratégia central', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Tema unificador: longevidade',
-    body: 'Longevidade eleva a conversa de "procedimento estético" para "investimento em saúde e qualidade de vida". Justifica o ticket premium, filtra o público pelo perfil correto e cria coerência entre todos os canais.',
-    items: ['Aplicar em todos os conteúdos: orgânico, anúncios, LPs', 'Primeira execução: campanha Dia das Mães com celebridade', 'Roteiro de gravação conectado ao conceito macro', 'Experiência online e presencial alinhadas ao mesmo discurso']
-  },
-  online: {
-    tag: 'Mídia online', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Estratégia de mídia online',
-    body: 'Tráfego pago no Meta e Google, conteúdo orgânico no Instagram do Dr. Ivan e da Human, landing pages otimizadas para conversão e remarketing para reimpactar leads que não converteram.',
-    items: ['Meta Ads: R$20K/mês — campanhas Dr. Ivan + Human + remarketing', 'Google Ads: R$10K/mês — busca ativa por nome e procedimento', 'Instagram: 3 reels + 2 feeds + stories diários', 'LPs: LP Dr. Ivan + LP Human Clinic conectadas ao WhatsApp']
-  },
-  instagram: {
-    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Instagram Dr. Ivan',
-    body: 'Perfil de autoridade e desejo. A estratégia é criar pautas abertas que o Dr. Ivan possa desenvolver no seu estilo. Nunca roteiros fechados.',
-    items: ['3 reels/semana — espontâneos, bastidores, opiniões', '2 feeds/semana — carrosseis educativos ou fotos premium', 'Stories diários — rotina, cultura, lifestyle', 'Pautas: longevidade, autoridade médica, bastidores de protocolo']
-  },
-  bastidores: {
-    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Conteúdo de bastidores',
-    body: 'O Dr. Ivan é uma mente criativa. O melhor conteúdo dele é espontâneo — bastidores de atendimento, processo criativo de um protocolo, o que o inspira.',
-    items: ['Bastidores de como pensa um protocolo exclusivo', 'O que aprendi nos últimos 15 anos de medicina estética', 'Rotina e o que faz para cuidar da própria longevidade', 'Referências que o inspiram (viagens, eventos, cultura)']
-  },
-  pautas: {
-    tag: 'Conteúdo', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Pautas abertas de autoridade',
-    body: 'Pautas prontas para o Dr. Ivan desenvolver no seu ritmo e estilo. São gatilhos, não roteiros.',
-    items: ['Por que medicina estética não é vaidade — é investimento', 'O que ninguém te conta sobre procedimentos baratos', 'Longevidade: o que muda no seu rosto nos 40, 50 e 60 anos', 'A diferença entre estética e medicina estética', 'Transformação de paciente: a história por trás do resultado']
-  },
-  trafego: {
-    tag: 'Tráfego pago', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Tráfego pago — estrutura',
-    body: 'R$30K/mês divididos entre Meta e Google. O público do Dr. Ivan é de ticket muito alto — o foco é qualidade, não volume máximo de leads.',
-    items: ['Meta Ads R$20K: campanhas Dr. Ivan, Human, Dia das Mães, remarketing', 'Google Ads R$10K: captura de demanda ativa e buscas pelo nome', 'CPL alvo: R$100–200 (público AAA)', 'Meta leads/mês: 150–250 leads qualificados']
-  },
-  meta: {
-    tag: 'Meta Ads', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Campanhas Meta Ads',
-    body: '4 campanhas ativas: Dia das Mães/longevidade (urgente), Dr. Ivan autoridade (sempre-ativo), Human institucional (sempre-ativo), e remarketing.',
-    items: ['Camp. 1 urgente: Dia das Mães com celebridade + mãe', 'Camp. 2: Dr. Ivan — vídeo, bastidores, depoimento de paciente', 'Camp. 3: Human Clinic — institucional, prova social, estrutura', 'Camp. 4: Remarketing — visitantes LP + engajamento Instagram']
-  },
-  google: {
-    tag: 'Google Ads', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Google Ads — busca ativa',
-    body: 'Captura de quem já está procurando. Menor volume, porém intenção de compra muito mais alta. Prioridade: nome do Dr. Ivan e procedimentos exclusivos.',
-    items: ['Keywords: dr ivan rollemberg, human clinic SP', 'Keywords: médico estética SP alto padrão, longevidade SP', 'Extensões: sitelinks por especialidade + chamada WhatsApp', 'Extensão de localização: 3 unidades SP']
-  },
-  lps: {
-    tag: 'Landing pages', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Estrutura de landing pages',
-    body: 'Duas LPs principais conectadas a um canal único de entrada (WhatsApp → CRM Fale Up). Todo tráfego entra por um ponto central.',
-    items: ['LP Dr. Ivan: foto impactante + credenciais + vídeo + depoimentos + CTA', 'LP Human: longevidade + especialidades + prova social + FAQ', 'Rastreamento: UTM + Pixel Meta + Tag Google em todas as LPs', 'Evento de conversão: clique no WhatsApp = lead registrado']
-  },
-  'lp-ivan': {
-    tag: 'LP Dr. Ivan', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'LP Dr. Ivan — alta conversão',
-    body: 'Página de autoridade e desejo. Tom aspiracional e exclusivo. Justifica o investimento antes do contato.',
-    items: ['Hero: foto impactante + headline de autoridade', 'Credenciais: formação, anos, reconhecimento internacional', 'Vídeo do Dr. Ivan falando diretamente ao paciente', 'Depoimentos de pacientes em vídeo ou texto', 'CTA com senso de exclusividade: "agenda limitada"']
-  },
-  crm: {
-    tag: 'Funil', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Conexão LP → CRM Fale Up',
-    body: 'Todo lead gerado pelo tráfego entra via WhatsApp e é gerido pelo CRM Fale Up pelo setor de agendamento.',
-    items: ['LP → botão WhatsApp (11 943339843)', 'WhatsApp → CRM Fale Up → setor agendamento', 'Agendamento confirmado → consulta médica', 'Consulta → comercial → fechamento → pós-venda']
-  },
-  remarketing: {
-    tag: 'Remarketing', tagBg: '#EEEDFE', tagColor: '#3C3489',
-    title: 'Campanhas de remarketing',
-    body: 'Reimpacto de quem demonstrou interesse mas não converteu. Mensagens mais diretas e específicas.',
-    items: ['Visitantes da LP do Dr. Ivan (últimos 30 dias)', 'Assistiu 50%+ do vídeo principal do Dr. Ivan', 'Engajou com o perfil Instagram (ambos)', 'Mensagem: "Agenda do Dr. Ivan — vagas limitadas"']
-  },
-  offline: {
-    tag: 'Mídia offline', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Estratégia de mídia offline',
-    body: 'Os canais offline constroem autoridade de longo prazo e geram o desejo de estar na cadeira do Dr. Ivan. Inclui parcerias, eventos, PR e social selling.',
-    items: ['Parcerias e influencers: 500+ parceiros · permuta · colabs', 'Eventos na clínica: talks e workshops de longevidade', 'PR e imprensa: matérias, podcasts, TV, revistas premium', 'Social selling: busca ativa na base dormindo']
-  },
-  parcerias: {
-    tag: 'Parcerias', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Parcerias e influencers',
-    body: 'A Human já tem mais de 500 parceiros no Brasil com diferentes formatos. A estratégia é ativar esse ativo de forma coordenada com o tema de longevidade.',
-    items: ['Permuta: influencer recebe procedimento e divulga', 'Colabs com celebridades (Dia das Mães como primeiro exemplo)', 'Parcerias com salões de beleza e clínicas parceiras', 'Sistema de indicação ativo: base de pacientes (89% recorrência)']
-  },
-  celebridade: {
-    tag: 'Urgente', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Campanha Dia das Mães com celebridade',
-    body: 'Primeiro entregável do novo posicionamento. Gravação de celebridade + mãe conectada ao tema macro de longevidade. Executar 2–3 semanas antes do Dia das Mães.',
-    items: ['Roteiro: conectar o tema longevidade à história da celebridade', 'Formatos: vídeo principal + cortes para reels + carrossel', 'Usar em: anúncios Meta, stories, feed Instagram, LP Human']
-  },
-  indicacao: {
-    tag: 'Indicação', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Sistema de indicação ativo',
-    body: 'A base atual da clínica é o maior ativo de captação. Taxa de 89% de recorrência — ativar esse canal de forma estruturada pode acelerar muito o crescimento.',
-    items: ['Criar programa formal de indicação com benefício para o indicador', 'Ativar base de pacientes dormentes com campanha segmentada', 'Lookalike no Meta criado a partir da lista de pacientes que fecharam', 'Pedir lista de clientes ao cliente (pendência crítica)']
-  },
-  eventos: {
-    tag: 'Eventos', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Eventos e presença premium',
-    body: 'Presença física da marca em espaços de luxo e bem-estar. Eventos próprios na clínica e participação em feiras do segmento.',
-    items: ['Talks na clínica sobre longevidade com o Dr. Ivan', 'Workshops de medicina preventiva para pacientes e parceiros', 'Participação em feiras de wellness e beleza premium em SP', 'Presença em eventos de lifestyle AAA (moda, gastronomia, arte)']
-  },
-  'eventos-clinica': {
-    tag: 'Eventos próprios', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Eventos na clínica',
-    body: 'A clínica vira palco. Eventos exclusivos para pacientes e convidados — cria comunidade, gera conteúdo e fortalece a percepção premium.',
-    items: ['Talk do Dr. Ivan sobre longevidade (para pacientes atuais)', 'Workshop fechado: "como planejar 10 anos de longevidade"', 'Cocktail de lançamento de nova tecnologia na clínica', 'Conteúdo gerado pelos eventos vira reel e carrossel']
-  },
-  feiras: {
-    tag: 'Feiras', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Feiras e eventos premium',
-    body: 'Presença em eventos onde o público-alvo da Human naturalmente está.',
-    items: ['Feiras de wellness e saúde integrativa em SP', 'Eventos de moda e lifestyle premium', 'Congressos médicos de medicina estética', 'Espaços de exposição em shoppings e clientes parceiros AAA']
-  },
-  pr: {
-    tag: 'PR', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'PR e assessoria de imprensa',
-    body: 'Posicionar o Dr. Ivan como maior referência de medicina estética do Brasil. Presença em veículos de alto alcance e credibilidade.',
-    items: ['Matérias em Vogue, Caras, Glamour, Elle — foco longevidade', 'Entrevistas em portais de saúde e bem-estar (UOL, G1, etc.)', 'Participações em podcasts de saúde, longevidade e lifestyle', 'Pautas para TV (Fantástico, GNT, Band News) sobre medicina estética']
-  },
-  'midia-espec': {
-    tag: 'Imprensa', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Mídia especializada',
-    body: 'Revistas e portais do universo da beleza e saúde premium — onde o público-alvo da Human busca referências.',
-    items: ['Vogue Brasil: matéria sobre longevidade com o Dr. Ivan', 'Caras: perfil do Dr. Ivan e casos de transformação', 'Portais UOL, G1 Saúde: reportagens sobre medicina estética', 'Blogs e influencers de beleza AAA para resenhas e matérias']
-  },
-  podcasts: {
-    tag: 'Podcasts', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Estratégia de podcasts',
-    body: 'O Dr. Ivan como convidado em podcasts de alto alcance nos temas saúde, longevidade e lifestyle premium.',
-    items: ['Podcasts de saúde: Flow, PodPeople, Café da Manhã', 'Podcasts de longevidade e bem-estar com audiência AAA', 'Criar próprio podcast da Human sobre longevidade (médio prazo)', 'Cada episódio vira recortes de conteúdo para o Instagram']
-  },
-  'social-selling': {
-    tag: 'Social selling', tagBg: '#FAECE7', tagColor: '#712B13',
-    title: 'Social selling e CRM ativo',
-    body: 'Ativação da base dormente e busca ativa de novos pacientes por meio de abordagem consultiva e personalizada.',
-    items: ['Reativar pacientes que não voltaram há mais de 6 meses', 'Closers com números profissionais para contato personalizado', 'Abordagem consultiva: entender onde o paciente está na jornada', 'Conectar social selling aos anúncios de remarketing']
-  },
-  integracao: {
-    tag: 'Operação', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Integração on + off',
-    body: 'O maior risco é a incoerência: o paciente vê um anúncio premium online, chega na clínica e a experiência não corresponde. A estratégia une os dois mundos.',
-    items: ['Mesma linguagem em anúncios, Instagram, recepção e consultório', 'Pós-venda alinhado ao tom de marca (sofisticado, exclusivo)', 'Conteúdo criado nos eventos offline vira post e anúncio online', 'Feedback do comercial e closers alimenta criativos de tráfego']
-  },
-  time: {
-    tag: 'Urgente', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Contratações urgentes — time local SP',
-    body: 'A estrutura atual não suporta a demanda de conteúdo. Felipe Meireles inicia o processo seletivo imediatamente.',
-    items: ['Social Media local SP: gestão de feed, stories e copy', 'Videomaker/Editor local SP: gravação e edição de reels', 'Iniciar trabalho com recursos internos enquanto contrata', 'Perfis devem entender posicionamento premium e medicina']
-  },
-  calendario: {
-    tag: 'Operação', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Calendário editorial mensal',
-    body: 'Planejamento de conteúdo mês a mês, alinhado ao calendário comercial da clínica e datas relevantes.',
-    items: ['Datas fixas: Dia das Mães, Dia das Mulheres, Natal, Verão', 'Campanhas do cliente integradas ao calendário de conteúdo', 'Revisão mensal com aprovação do cliente antes da execução', 'Dois calendários: central da clínica + datas premium (solicitar)']
-  },
-  relatorios: {
-    tag: 'Gestão', tagBg: '#F1EFE8', tagColor: '#444441',
-    title: 'Relatórios semanais',
-    body: 'A equipe atua como time de marketing interno da Human. Os resultados são responsabilidade da equipe — os relatórios precisam mostrar isso com clareza.',
-    items: ['Leads gerados por campanha e plataforma', 'CPL (custo por lead) por especialidade', 'Taxa de agendamento e taxa de fechamento', 'ROAS e faturamento atribuído ao tráfego pago']
-  },
-  resultados: {
-    tag: 'Resultados', tagBg: '#E1F5EE', tagColor: '#085041',
-    title: 'Resultados esperados',
-    body: 'A meta é crescer de R$4,6M para R$7M mensais. Para isso, a estratégia combina aumento de volume de leads qualificados com fortalecimento de autoridade e manutenção da alta recorrência.',
-    items: ['Faturamento: R$7M/mês em 6–12 meses', 'Volume: 200–350 leads qualificados/mês', 'Qualidade: público AAA · CPL R$100–200', 'Autoridade: Dr. Ivan como referência nacional', 'Recorrência: manter os 89% e ampliar upsell']
-  },
-  'meta-fat': {
-    tag: 'Meta', tagBg: '#E1F5EE', tagColor: '#085041',
-    title: 'Meta de faturamento',
-    body: 'De R$4,6M para R$7M mensais. O crescimento precisa vir de novos pacientes premium e do aumento de ticket dos pacientes atuais.',
-    items: ['Milestone 6 meses: R$5,5–6M/mês', 'Milestone 12 meses: R$7M/mês', 'Alavancas: volume de leads + qualidade + upsell da base', 'KPI semanal: receita atribuída ao tráfego pago']
-  },
-  'qualidade-leads': {
-    tag: 'Leads', tagBg: '#E1F5EE', tagColor: '#085041',
-    title: 'Qualidade de leads',
-    body: 'O público do Dr. Ivan paga R$50–60K. Volume alto de leads baratos não resolve — o foco é atrair o perfil certo.',
-    items: ['Público: mulheres 35–60 anos, AAA, bairros premium SP', 'CPL alvo: R$100–200 (aceitar CPL mais alto por qualidade)', 'Segmentação: interesses saúde, luxo, longevidade, bem-estar', 'Lookalike: criar a partir da base de pacientes que fecharam']
-  },
-  autoridade: {
-    tag: 'Autoridade', tagBg: '#E1F5EE', tagColor: '#085041',
-    title: 'Autoridade nacional do Dr. Ivan',
-    body: 'O objetivo não é só vender mais — é transformar o Dr. Ivan no maior nome de medicina estética do Brasil. Isso multiplica o valor percebido e justifica qualquer ticket.',
-    items: ['Presença em mídia nacional (TV, revistas, podcasts grandes)', 'Instagram como vitrine de autoridade e estilo de vida', 'Colabs com celebridades e figuras de referência', 'Conteúdo que mostra a profundidade clínica e criativa do Dr. Ivan']
-  },
-  recorrencia: {
-    tag: 'Recorrência', tagBg: '#E1F5EE', tagColor: '#085041',
-    title: 'Recorrência e upsell da base',
-    body: 'Com 89% de recorrência, a base existente é o maior ativo. A estratégia é manter e ampliar esse número com upsell de protocolos e novos tratamentos.',
-    items: ['Reativar pacientes dormentes com campanha personalizada', 'Upsell: apresentar novos procedimentos para pacientes ativos', 'Pós-venda estruturado: mensagem de acompanhamento pós-procedimento', 'Programa de indicação: paciente que indica ganha benefício']
-  }
-};
-
-const panel = document.getElementById('panel');
-const tag = document.getElementById('panel-tag');
-const title = document.getElementById('panel-title');
-const body = document.getElementById('panel-body');
-const items = document.getElementById('panel-items');
-
-function showPanel(key) {
-  const d = data[key];
-  if (!d) return;
-  tag.textContent = d.tag;
-  tag.style.background = d.tagBg;
-  tag.style.color = d.tagColor;
-  title.textContent = d.title;
-  body.textContent = d.body;
-  items.innerHTML = d.items.map(i => `<li>${i}</li>`).join('');
-  panel.classList.add('open');
+function toggle(el) {
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.event-row').forEach(r => r.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
 }
 
-function closePanel() {
-  panel.classList.remove('open');
-}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+document.querySelectorAll('.animate').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
